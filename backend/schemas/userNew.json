@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://propulse.com/userNew.schema.json",
+  "title": "New User",
+  "description": "A user in the database",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 40,
+      "format": "email"
+    },
+    "firstName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "lastName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "phone": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 17
+    },
+    "password": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 20
+    },
+    "organization": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "title": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 30
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "email",
+    "firstName",
+    "lastName",
+    "phone",
+    "password",
+    "organization",
+    "title"
+  ]
+}

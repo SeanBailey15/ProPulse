@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://propulse.com/image.schema.json",
+  "title": "Image",
+  "description": "An image in the database",
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "url"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["url"]
+}

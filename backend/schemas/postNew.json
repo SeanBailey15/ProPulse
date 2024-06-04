@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://propulse.com/postNew.schema.json",
+  "title": "New Post",
+  "description": "A post in the database",
+  "type": "object",
+  "properties": {
+    "deadline": {
+      "type": "string"
+    },
+    "progress": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "urgency": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false,
+  "required": ["content"]
+}
