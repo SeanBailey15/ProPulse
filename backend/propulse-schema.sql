@@ -15,14 +15,14 @@ CREATE TABLE jobs (
     city TEXT,
     state TEXT,
     street_addr TEXT,
-    admin INTEGER REFERENCES users(id)
+    admin INTEGER REFERENCES users(id) NOT NULL
 );
 
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
     date_posted TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    posted_by INTEGER REFERENCES users(id),
-    job_id INTEGER REFERENCES jobs(id),
+    posted_by INTEGER REFERENCES users(id) NOT NULL,
+    job_id INTEGER REFERENCES jobs(id) NOT NULL,
     deadline TIMESTAMPTZ DEFAULT NULL,
     progress TEXT DEFAULT NULL,
     urgency TEXT DEFAULT NULL,
@@ -32,25 +32,25 @@ CREATE TABLE posts (
 CREATE TABLE images (
     id SERIAL PRIMARY KEY,
     url TEXT NOT NULL,
-    posted_by INTEGER REFERENCES users(id),
-    post_id INTEGER REFERENCES posts(id),
-    job_id INTEGER REFERENCES jobs(id)
+    posted_by INTEGER REFERENCES users(id) NOT NULL,
+    post_id INTEGER REFERENCES posts(id) NOT NULL,
+    job_id INTEGER REFERENCES jobs(id) NOT NULL
 );
 
 CREATE TABLE post_tagged_users (
-    post_id INTEGER REFERENCES posts(id),
-    user_id INTEGER REFERENCES users(id),
+    post_id INTEGER REFERENCES posts(id) NOT NULL,
+    user_id INTEGER REFERENCES users(id) NOT NULL,
     PRIMARY KEY (post_id, user_id)
 );
 
 CREATE TABLE job_associations (
-    job_id INTEGER REFERENCES jobs(id),
-    user_id INTEGER REFERENCES users(id),
+    job_id INTEGER REFERENCES jobs(id) NOT NULL,
+    user_id INTEGER REFERENCES users(id) NOT NULL,
     PRIMARY KEY (job_id, user_id)
 );
 
 CREATE TABLE job_privileges (
-    job_id INTEGER REFERENCES jobs(id),
-    user_id INTEGER REFERENCES users(id),
+    job_id INTEGER REFERENCES jobs(id) NOT NULL,
+    user_id INTEGER REFERENCES users(id) NOT NULL,
     PRIMARY KEY (job_id, user_id)
 );
