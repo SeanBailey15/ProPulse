@@ -101,7 +101,7 @@ class User {
 
   /** Find all users.
    *
-   * Returns [{ id, email, first_name, last_name, phone, organization, title }, ...]
+   * Returns [{ id, email, firstName, lastName, phone, organization, title }, ...]
    **/
 
   static async findAll() {
@@ -120,10 +120,11 @@ class User {
     return result.rows;
   }
 
-  /** Given a user id, return data about user.
+  /** Given a user id, return data about user and their jobs.
    *
-   * Returns { id, email, first_name, last_name, phone, organization, title, jobs }
-   *   where jobs is { id, name, city, state, streetAddr, adminId, adminEmail }
+   * Returns { id, email, firstName, lastName, phone, organization, title, jobs }
+   *   where jobs is [{ id, name, city, state, streetAddr, adminId, adminEmail }, ...]
+   *   or jobs property not listed when no jobs are found
    *
    * Throws NotFoundError if user not found.
    **/

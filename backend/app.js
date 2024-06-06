@@ -6,10 +6,7 @@ const cors = require("cors");
 const { NotFoundError } = require("./expressError");
 
 const usersRoutes = require("./routes/users");
-
-/*
- OTHER MIDDLEWARE AND ROUTE IMPORTS HERE
-*/
+const jobsRoutes = require("./routes/jobs");
 
 const morgan = require("morgan");
 
@@ -24,6 +21,7 @@ app.use(morgan("tiny"));
  APP.USE ALL ROUTES HERE
 */
 app.use("/users", usersRoutes);
+app.use("/jobs", jobsRoutes);
 
 app.use(function (req, res, next) {
   return next(new NotFoundError());
