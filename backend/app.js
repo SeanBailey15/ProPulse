@@ -3,7 +3,9 @@
 const express = require("express");
 const cors = require("cors");
 
-// const {NotFoundError} = require("./expressError");
+const { NotFoundError } = require("./expressError");
+
+const usersRoutes = require("./routes/users");
 
 /*
  OTHER MIDDLEWARE AND ROUTE IMPORTS HERE
@@ -21,12 +23,11 @@ app.use(morgan("tiny"));
 /*
  APP.USE ALL ROUTES HERE
 */
+app.use("/users", usersRoutes);
 
-/* UNCOMMENT ONCE IMPLEMENTED
 app.use(function (req, res, next) {
   return next(new NotFoundError());
 });
-*/
 
 app.use(function (err, req, res, next) {
   if (process.env.NODE_ENV !== "test") console.error(err.stack);
