@@ -105,6 +105,7 @@ class User {
    **/
 
   static async findAll() {
+    // THIS METHOD MAY NOT BE NEEDED, NO REASON TO GET *ALL* USERS
     const result = await db.query(
       `SELECT id,
               email,

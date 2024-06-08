@@ -26,7 +26,32 @@ CREATE TABLE posts (
     deadline TIMESTAMPTZ DEFAULT NULL,
     progress TEXT DEFAULT NULL,
     urgency TEXT DEFAULT NULL,
-    content TEXT NOT NULL
+    content TEXT NOT NULL,
+    tagged INTEGER[],
+    is_reply BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE post_tagged_users (
+    post_id INTEGER REFERENCES posts(id) NOT NULL,
+    user_id INTEGER REFERENCES users(id) NOT NULL,
+    PRIMARY KEY (post_id, user_id)
+);
+
+CREATE TABLE replies (
+    id SERIAL PRIMARY KEY,
+    date_posted TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    posted_by INTEGER REFERENCES users(id) NOT NULL,
+    reply_to INTEGER REFERENCES posts(id) NOT NULL,
+    deadline TIMESTAMPTZ DEFAULT NULL,
+    content TEXT NOT NULL,
+    tagged INTEGER[] DEFAULT NULL,
+    is_reply BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE reply_tagged_users (
+    reply_id INTEGER REFERENCES replies(id) NOT NULL,
+    user_id INTEGER REFERENCES users(id) NOT NULL,
+    PRIMARY KEY (reply_id, user_id)
 );
 
 CREATE TABLE images (
@@ -35,12 +60,6 @@ CREATE TABLE images (
     posted_by INTEGER REFERENCES users(id) NOT NULL,
     post_id INTEGER REFERENCES posts(id) NOT NULL,
     job_id INTEGER REFERENCES jobs(id) NOT NULL
-);
-
-CREATE TABLE post_tagged_users (
-    post_id INTEGER REFERENCES posts(id) NOT NULL,
-    user_id INTEGER REFERENCES users(id) NOT NULL,
-    PRIMARY KEY (post_id, user_id)
 );
 
 CREATE TABLE job_associations (

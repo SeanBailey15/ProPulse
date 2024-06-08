@@ -2,7 +2,11 @@
 
 const db = require("../db");
 
-const { NotFoundError } = require("../expressError");
+const {
+  NotFoundError,
+  BadRequestError,
+  UnauthorizedError,
+} = require("../expressError");
 
 /** Related functions for jobs. */
 

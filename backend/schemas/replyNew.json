@@ -1,14 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://propulse.com/postNew.schema.json",
-  "title": "New Post",
+  "$id": "https://propulse.com/replyNew.schema.json",
+  "title": "New reply",
   "description": "A post in the database",
   "type": "object",
   "properties": {
     "postedBy": {
       "type": "integer"
     },
-    "jobId": {
+    "replyTo": {
       "type": "integer"
     },
     "deadline": {
