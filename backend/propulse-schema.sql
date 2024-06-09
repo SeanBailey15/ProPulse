@@ -6,7 +6,8 @@ CREATE TABLE users (
     phone TEXT NOT NULL,
     password TEXT NOT NULL,
     organization TEXT NOT NULL,
-    title TEXT NOT NULL
+    title TEXT NOT NULL,
+    profile_img TEXT DEFAULT NULL
 );
 
 CREATE TABLE jobs (

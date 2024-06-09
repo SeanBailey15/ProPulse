@@ -16,7 +16,7 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 class User {
   /** authenticate user with email, password.
    *
-   * Returns { id, email, firstName, lastName, phone, organization, title }
+   * Returns { id, email, firstName, lastName, phone, organization, title, profileImg }
    *
    * Throws UnauthorizedError is user not found or wrong password.
    **/
@@ -31,7 +31,8 @@ class User {
               last_name AS "lastName",
               phone,
               organization,
-              title
+              title,
+              profile_img AS "profileImg"
            FROM users
            WHERE email = $1`,
       [email]
@@ -99,28 +100,6 @@ class User {
     return user;
   }
 
-  /** Find all users.
-   *
-   * Returns [{ id, email, firstName, lastName, phone, organization, title }, ...]
-   **/
-
-  static async findAll() {
-    // THIS METHOD MAY NOT BE NEEDED, NO REASON TO GET *ALL* USERS
-    const result = await db.query(
-      `SELECT id,
-              email,
-              first_name AS "firstName",
-              last_name AS "lastName",
-              phone,
-              organization,
-              title
-           FROM users
-           ORDER BY email`
-    );
-
-    return result.rows;
-  }
-
   /** Given a user id, return data about user and their jobs.
    *
    * Returns { id, email, firstName, lastName, phone, organization, title, jobs }
@@ -138,7 +117,8 @@ class User {
               last_name AS "lastName",
               phone,
               organization,
-              title
+              title,
+              profile_img AS "profileImg"
            FROM users
            WHERE id = $1`,
       [userId]

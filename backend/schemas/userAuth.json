@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://propulse.com/userAuth.schema.json",
+  "title": "User Auth",
+  "description": "For use with user authentication inputs",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 40,
+      "format": "email"
+    },
+    "password": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 20
+    }
+  },
+  "additionalProperties": false,
+  "required": ["email", "password"]
+}
