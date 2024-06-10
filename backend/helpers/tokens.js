@@ -8,7 +8,8 @@ function createToken(user) {
     id: user.id, // needed to pass into some requests
     email: user.email, // needed for display purposes
     jobs: user.jobs, // needed for authorization checks
-    message: user.message,
+    message: user.message, // will be in the token if no jobs are available
+    profileImg: user.profileImg, // needed to display img on various routes
   };
 
   return jwt.sign(payload, SECRET_KEY);

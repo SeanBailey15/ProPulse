@@ -58,8 +58,16 @@ router.post("/register", async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    const newUser = await User.register({ ...req.body });
-    const token = createToken(newUser);
+    const user = await User.register({ ...req.body });
+
+    const userJobs = await Job.findUserJobs(user.id);
+    if (userJobs.length > 0) {
+      user.jobs = userJobs.map((j) => j.id);
+    } else if (userJobs.message) {
+      user.message = userJobs.message;
+    }
+
+    const token = createToken(user);
     return res.status(201).json({ token });
   } catch (err) {
     return next(err);

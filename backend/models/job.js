@@ -73,7 +73,7 @@ class Job {
       return userJobs;
     }
     return {
-      message: "User is not associated with any jobs.",
+      message: "The user is not associated with any jobs.",
     };
   }
 

@@ -9,6 +9,8 @@ const {
   UnauthorizedError,
 } = require("../expressError");
 
+const { sqlForPartialUpdate } = require("../helpers/sql");
+
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
 
 /** Related functions for users. */
@@ -91,7 +93,7 @@ class User {
             organization,
             title)
            VALUES ($1, $2, $3, $4, $5, $6, $7)
-           RETURNING id, email, first_name AS "firstName", last_name AS "lastName", phone, organization, title`,
+           RETURNING id, email, first_name AS "firstName", last_name AS "lastName", phone, organization, title, profile_img AS "profileImg"`,
       [email, hashedPassword, firstName, lastName, phone, organization, title]
     );
 
@@ -146,6 +148,46 @@ class User {
     );
 
     if (userJobsRes.rows[0]) user.jobs = userJobsRes.rows.map((ja) => ja);
+
+    return user;
+  }
+
+  /** Update user data with provided data
+   *
+   * This is a partial update, not all user properties are required in the data
+   *
+   * Data can include:
+   *  { email, firstName, lastName, phone, organization, title, profileImg }
+   *
+   * Returns { email, firstName, lastName, phone, organization, title, profileImg }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+  static async update(userId, data) {
+    const { setCols, values } = sqlForPartialUpdate(data, {
+      firstName: "first_name",
+      lastName: "last_name",
+      profileImg: "profile_img",
+    });
+
+    const userIdVarIdx = "$" + (values.length + 1);
+
+    const querySql = `UPDATE users
+                      SET ${setCols}
+                      WHERE id = ${userIdVarIdx}
+                      RETURNING email,
+                                first_name AS "firstName",
+                                last_name AS "lastName",
+                                phone,
+                                organization,
+                                title,
+                                profile_img AS "profileImg"`;
+
+    const result = await db.query(querySql, [...values, userId]);
+    const user = result.rows[0];
+
+    if (!user) throw new NotFoundError(`User Does Not Exist: id ${userId}`);
 
     return user;
   }
