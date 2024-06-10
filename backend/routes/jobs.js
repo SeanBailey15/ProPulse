@@ -8,16 +8,19 @@ const express = require("express");
 const { BadRequestError } = require("../expressError");
 const Job = require("../models/job");
 const jobNewSchema = require("../schemas/jobNew.json");
+const { createToken } = require("../helpers/tokens");
+const { ensureLoggedIn, ensureJobMatch } = require("../middleware/auth");
 
 const router = express.Router();
 
 /** POST / { job }  => { job }
  *
  * Creates a new job
+ * Creates an updated token for auth
  * Returns job data
  **/
 
-router.post("/", async function (req, res, next) {
+router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, jobNewSchema);
     if (!validator.valid) {
@@ -26,26 +29,28 @@ router.post("/", async function (req, res, next) {
     }
 
     const job = await Job.createJob(req.body);
-    // const token = createToken(user);
-    return res.status(201).json({ job }); // !!!put token into json return once implemented!!!
+    console.log(res.locals.user);
+
+    const user = { ...res.locals.user };
+
+    const userJobs = await Job.findUserJobs(user.id);
+    if (userJobs.length > 0) {
+      user.jobs = userJobs.map((j) => j.id);
+    } else if (userJobs.message) {
+      user.message = userJobs.message;
+    }
+
+    const token = createToken(user);
+    return res.status(201).json({ job, token });
   } catch (err) {
     return next(err);
   }
 });
 
-router.get("/:id", async function (req, res, next) {
+router.get("/:id", ensureJobMatch, async function (req, res, next) {
   try {
     const job = await Job.getJob(req.params.id);
     return res.json({ job });
-  } catch (err) {
-    return next(err);
-  }
-});
-
-router.get("/userJobs/:userId", async function (req, res, next) {
-  try {
-    const userJobs = await Job.findUserJobs(req.params.userId);
-    return res.json({ userJobs });
   } catch (err) {
     return next(err);
   }

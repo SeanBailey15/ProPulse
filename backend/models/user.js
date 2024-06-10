@@ -76,7 +76,7 @@ class User {
     );
 
     if (duplicateCheck.rows[0]) {
-      throw new BadRequestError(`Duplicate email: ${email}`);
+      throw new BadRequestError(`Duplicate email: ${email} already exists`);
     }
 
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);

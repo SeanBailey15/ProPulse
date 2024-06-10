@@ -18,7 +18,7 @@ const router = new express.Router();
  * Returns JWT token which can be used to authenticate further requests.
  */
 
-router.post("/token", async function (req, res, next) {
+router.post("/login", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userAuthSchema);
     if (!validator.valid) {
@@ -30,7 +30,11 @@ router.post("/token", async function (req, res, next) {
     const user = await User.authenticate(email, password);
 
     const userJobs = await Job.findUserJobs(user.id);
-    if (userJobs.length > 0) user.jobs = userJobs.map((j) => j.id);
+    if (userJobs.length > 0) {
+      user.jobs = userJobs.map((j) => j.id);
+    } else if (userJobs.message) {
+      user.message = userJobs.message;
+    }
 
     const token = createToken(user);
     return res.json({ token });

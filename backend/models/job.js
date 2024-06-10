@@ -52,6 +52,7 @@ class Job {
    * Returns a message if the user is not associated with any jobs
    **/
 
+  // Useful to supplement User.authenticate method upon login
   static async findUserJobs(userId) {
     const result = await db.query(
       `SELECT id,
@@ -82,6 +83,9 @@ class Job {
    * Returns {id, name, city, state, streetAddr, adminId, adminEmail}
    *    where posts is [{id, datePosted, postedBy, deadline, progress, urgency, content}, ...]
    *    or posts property not listed when no posts are found
+   *    and where users is [{id, email, organization, title}, ...]
+   *    omitting admin from the collection of users since they are retrieved in the first query
+   *    or users property not listed when no users are found
    *
    * Throw NotFoundError if job not found.
    **/
@@ -124,6 +128,23 @@ class Job {
     );
 
     if (jobPostsRes.rows[0]) job.posts = jobPostsRes.rows.map((jp) => jp);
+
+    const jobUserRes = await db.query(
+      `SELECT users.id,
+              users.email,
+              users.organization,
+              users.title
+            FROM users
+            JOIN job_associations AS ja
+            ON users.id = ja.user_id
+            JOIN jobs
+            ON jobs.id = ja.job_id
+            WHERE jobs.id = $1 AND users.id <> $2
+            ORDER BY email`,
+      [jobId, job.adminId]
+    );
+
+    if (jobUserRes.rows[0]) job.users = jobUserRes.rows.map((ju) => ju);
 
     return job;
   }

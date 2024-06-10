@@ -27,4 +27,35 @@ function authenticateJWT(req, res, next) {
   }
 }
 
-module.exports = { authenticateJWT };
+/** Middleware to use when they must be logged in.
+ *
+ * If not, raises Unauthorized.
+ */
+
+function ensureLoggedIn(req, res, next) {
+  try {
+    if (!res.locals.user) throw new UnauthorizedError();
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+}
+
+/** Middleware to use when user requests access to a job.
+ *
+ * User.jobs must include the requested job id.
+ *
+ * If not, raises Unauthorized.
+ */
+
+function ensureJobMatch(req, res, next) {
+  if (!res.locals.user.jobs.includes(+req.params.id))
+    throw new UnauthorizedError();
+  return next();
+}
+
+/** Middleware to use when
+ *
+ */
+
+module.exports = { authenticateJWT, ensureLoggedIn, ensureJobMatch };
