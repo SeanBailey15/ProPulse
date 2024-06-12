@@ -5,6 +5,16 @@
 require("dotenv").config();
 require("colors");
 
+// Set up web push configuration
+const push = require("web-push");
+
+const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
+const MAIL_TO_ID = process.env.MAIL_TO_ID;
+
+push.setVapidDetails(MAIL_TO_ID, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+
+// Other configuration
 const SECRET_KEY = process.env.SECRET_KEY || "secret-dev";
 
 const PORT = +process.env.PORT || 3001;
@@ -36,4 +46,5 @@ module.exports = {
   PGPASSWORD,
   BCRYPT_WORK_FACTOR,
   getDatabaseUri,
+  push,
 };
