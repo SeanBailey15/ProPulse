@@ -7,7 +7,9 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     organization TEXT NOT NULL,
     title TEXT NOT NULL,
-    profile_img TEXT DEFAULT NULL
+    profile_img TEXT DEFAULT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    subscriptions JSON[] DEFAULT NULL
 );
 
 CREATE TABLE jobs (

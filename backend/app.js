@@ -10,6 +10,7 @@ const usersRoutes = require("./routes/users");
 const jobsRoutes = require("./routes/jobs");
 const postsRoutes = require("./routes/posts");
 const authRoutes = require("./routes/auth");
+const pushRoutes = require("./routes/push");
 
 const morgan = require("morgan");
 
@@ -24,6 +25,7 @@ app.use("/users", usersRoutes);
 app.use("/jobs", jobsRoutes);
 app.use("/posts", postsRoutes);
 app.use("/auth", authRoutes);
+app.use("/push", pushRoutes);
 
 app.use(function (req, res, next) {
   return next(new NotFoundError());

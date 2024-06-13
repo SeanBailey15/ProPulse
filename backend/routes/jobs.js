@@ -29,7 +29,6 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
     }
 
     const job = await Job.createJob(req.body);
-    console.log(res.locals.user);
 
     const user = { ...res.locals.user };
 

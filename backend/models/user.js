@@ -104,7 +104,7 @@ class User {
 
   /** Given a user id, return data about user and their jobs.
    *
-   * Returns { id, email, firstName, lastName, phone, organization, title, jobs }
+   * Returns { id, email, firstName, lastName, phone, organization, title, active, subscriptons, jobs }
    *   where jobs is [{ id, name, city, state, streetAddr, adminId, adminEmail }, ...]
    *   or jobs property not listed when no jobs are found
    *
@@ -120,14 +120,17 @@ class User {
               phone,
               organization,
               title,
-              profile_img AS "profileImg"
+              profile_img AS "profileImg",
+              active,
+              subscriptions
            FROM users
            WHERE id = $1`,
       [userId]
     );
     const user = userRes.rows[0];
 
-    if (!user) throw new NotFoundError(`No user with id: ${userId}`);
+    if (!user || !user.active)
+      throw new NotFoundError(`No user with id: ${userId}`);
 
     const id = userRes.rows[0].id;
     const userJobsRes = await db.query(
@@ -159,7 +162,7 @@ class User {
    * Data can include:
    *  { email, firstName, lastName, phone, organization, title, profileImg }
    *
-   * Returns { email, firstName, lastName, phone, organization, title, profileImg }
+   * Returns { email, firstName, lastName, phone, organization, title, profileImg, active, subscriptions }
    *
    * Throws NotFoundError if not found.
    */
@@ -182,7 +185,9 @@ class User {
                                 phone,
                                 organization,
                                 title,
-                                profile_img AS "profileImg"`;
+                                profile_img AS "profileImg",
+                                active,
+                                subscriptions`;
 
     const result = await db.query(querySql, [...values, userId]);
     const user = result.rows[0];
@@ -190,6 +195,45 @@ class User {
     if (!user) throw new NotFoundError(`User Does Not Exist: id ${userId}`);
 
     return user;
+  }
+
+  /** Updates user notification subscriptions
+   *
+   * Takes subscription object and user id
+   *
+   * Inserts subscription object into user subscriptions array
+   */
+
+  static async addSubscription(subscription, userId) {
+    const subCheck = await db.query(
+      `SELECT subscriptions
+        FROM users
+        WHERE id = $1`,
+      [userId]
+    );
+    const { subscriptions } = subCheck.rows[0];
+
+    if (subscriptions) {
+      const existingSubscription = subscriptions.find(
+        (sub) => sub.endpoint === subscription.endpoint
+      );
+
+      if (existingSubscription) {
+        throw new Error("Subscription already exists");
+      }
+    }
+
+    const subRes = await db.query(
+      `UPDATE users
+          SET subscriptions = array_append(subscriptions, $1)
+          WHERE id = $2
+          RETURNING subscriptions`,
+      [subscription, userId]
+    );
+
+    const userSubs = subRes.rows[0];
+
+    return userSubs;
   }
 }
 
