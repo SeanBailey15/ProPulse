@@ -21,15 +21,18 @@ const router = new express.Router();
 router.post("/login", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userAuthSchema);
+
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
     const { email, password } = req.body;
+
     const user = await User.authenticate(email, password);
 
     const userJobs = await Job.findUserJobs(user.id);
+
     if (userJobs.length > 0) {
       user.jobs = userJobs.map((j) => j.id);
     } else if (userJobs.message) {
@@ -53,6 +56,7 @@ router.post("/login", async function (req, res, next) {
 router.post("/register", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userNewSchema);
+
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
@@ -61,6 +65,7 @@ router.post("/register", async function (req, res, next) {
     const user = await User.register({ ...req.body });
 
     const userJobs = await Job.findUserJobs(user.id);
+
     if (userJobs.length > 0) {
       user.jobs = userJobs.map((j) => j.id);
     } else if (userJobs.message) {

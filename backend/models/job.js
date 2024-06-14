@@ -19,7 +19,7 @@ class Job {
    * the job_associations table
    **/
 
-  static async createJob({ name, city, state, streetAddr, adminId }) {
+  static async createJob({ name, city, state, streetAddr }, adminId) {
     const result = await db.query(
       `INSERT INTO jobs
                 (name,
@@ -52,7 +52,7 @@ class Job {
    * Returns a message if the user is not associated with any jobs
    **/
 
-  // Useful to supplement User.authenticate method upon login
+  // Useful to supplement user routes
   static async findUserJobs(userId) {
     const result = await db.query(
       `SELECT id,

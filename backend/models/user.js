@@ -108,7 +108,7 @@ class User {
    *   where jobs is [{ id, name, city, state, streetAddr, adminId, adminEmail }, ...]
    *   or jobs property not listed when no jobs are found
    *
-   * Throws NotFoundError if user not found.
+   * Throws NotFoundError if user not found or user deactivated.
    **/
 
   static async get(userId) {
@@ -195,6 +195,33 @@ class User {
     if (!user) throw new NotFoundError(`User Does Not Exist: id ${userId}`);
 
     return user;
+  }
+
+  /** Deactivates a given user in the database.
+   *
+   * Toggles user.active to false, simulating deletion
+   *  and allowing for account recovery if they change their mind.
+   *
+   * Returns a message.
+   */
+
+  static async deactivate(userId) {
+    const userCheck = await db.query(`SELECT * FROM users WHERE id = $1`, [
+      userId,
+    ]);
+
+    const user = userCheck.rows[0];
+
+    if (!user) throw new NotFoundError("User does not exist in database");
+
+    await db.query(
+      `UPDATE users
+        SET active = false
+        WHERE id = $1`,
+      [userId]
+    );
+
+    return "User deactivated";
   }
 
   /** Updates user notification subscriptions

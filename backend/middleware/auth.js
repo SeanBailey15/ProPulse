@@ -43,7 +43,7 @@ function ensureLoggedIn(req, res, next) {
 
 /** Middleware to use when user requests access to a job.
  *
- * User.jobs must include the requested job id.
+ * user.jobs must include the requested job id.
  *
  * If not, raises Unauthorized.
  */
@@ -54,8 +54,21 @@ function ensureJobMatch(req, res, next) {
   return next();
 }
 
-/** Middleware to use when
+/** Middleware to use when requested user must be current user.
  *
+ * Current user id must equal requested user id.
+ *
+ * If not, raises Unauthorized.
  */
 
-module.exports = { authenticateJWT, ensureLoggedIn, ensureJobMatch };
+function ensureSelf(req, res, next) {
+  if (res.locals.user.id !== +req.params.id) throw new UnauthorizedError();
+  return next();
+}
+
+module.exports = {
+  authenticateJWT,
+  ensureLoggedIn,
+  ensureJobMatch,
+  ensureSelf,
+};
