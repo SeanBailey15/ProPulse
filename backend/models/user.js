@@ -155,6 +155,69 @@ class User {
     return user;
   }
 
+  /** Get a user by their email
+   *
+   * Used with site and job invites only
+   *  only id data required for these actions
+   *
+   * Returns { id, email, firstName, lastName, phone, organization, title, profileImg, active, subscription }
+   *
+   * Throws NotFound if user not found or is deactivated
+   */
+
+  static async getByEmail(userEmail) {
+    const userRes = await db.query(
+      `SELECT id, 
+              email,
+              first_name AS "firstName",
+              last_name AS "lastName",
+              phone,
+              organization,
+              title,
+              profile_img AS "profileImg",
+              active,
+              subscriptions
+           FROM users
+           WHERE email = $1`,
+      [userEmail]
+    );
+
+    const user = userRes.rows[0];
+
+    if (!user || !user.active)
+      throw new NotFoundError(`No user with email: ${userEmail}`);
+
+    return user;
+  }
+
+  /** Get all users from database
+   *
+   * Not necessary to this point, may find a use later
+   *
+   * Returns all users:
+   *  [{ id, email, firstName, lastName, phone, organization, title, profileImg, active, subscriptions }, ...]
+   */
+
+  static async getAll() {
+    const userRes = await db.query(
+      `SELECT id,
+              email,
+              first_name AS "firstName",
+              last_name AS "lastName",
+              phone,
+              organization,
+              title,
+              profile_img AS "profileImg",
+              active,
+              subscriptions
+        FROM users`
+    );
+
+    const users = userRes.rows;
+
+    return users;
+  }
+
   /** Update user data with provided data
    *
    * This is a partial update, not all user properties are required in the data

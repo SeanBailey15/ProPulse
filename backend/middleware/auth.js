@@ -6,6 +6,23 @@ const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
 
+/** Middleware: Block access to route
+ *
+ * Simply throws unauthorized error to block route
+ *
+ * Made to protect certain routes that are not apparently useful yet
+ *
+ * Throws Unauthorized Error
+ */
+
+function blockRoute(req, res, next) {
+  try {
+    throw new UnauthorizedError();
+  } catch (err) {
+    return next(err);
+  }
+}
+
 /** Middleware: Authenticate user.
  *
  * If a token was provided, verify it, and, if valid, store the token payload
@@ -71,4 +88,5 @@ module.exports = {
   ensureLoggedIn,
   ensureJobMatch,
   ensureSelf,
+  blockRoute,
 };

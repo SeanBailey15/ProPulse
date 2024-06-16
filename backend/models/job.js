@@ -42,29 +42,41 @@ class Job {
       [job.id, job.adminId]
     );
 
+    await db.query(
+      `INSERT INTO job_privileges
+                  (job_id,
+                   user_id)
+                   VALUES ($1, $2)`,
+      [job.id, job.adminId]
+    );
+
     return job;
   }
 
   /** Given a userId, finds all jobs associated with the user.
    *
-   * Returns [{ id, name, city, state, streetAddr, adminId}, ...]
+   * Returns [{ id, name, city, state, streetAddr, adminId, adminEmail }, ...]
    *
    * Returns a message if the user is not associated with any jobs
    **/
 
-  // Useful to supplement user routes
+  // *** Useful to supplement user routes and update tokens ***
+
   static async findUserJobs(userId) {
     const result = await db.query(
-      `SELECT id,
-            name,
-            city,
-            state,
-            street_addr AS "streetAddr",
-            admin AS "adminId"
-        FROM jobs
-        JOIN job_associations AS ja
-        ON jobs.id = ja.job_id
-        WHERE ja.user_id = $1`,
+      `SELECT jobs.id,
+              jobs.name,
+              jobs.city,
+              jobs.state,
+              jobs.street_addr AS "streetAddr",
+              jobs.admin AS "adminId",
+              users.email AS "adminEmail"
+            FROM jobs
+            JOIN job_associations AS ja
+            ON jobs.id = ja.job_id
+            JOIN users
+            ON jobs.admin = users.id
+            WHERE ja.user_id = $1`,
       [userId]
     );
 
@@ -77,8 +89,7 @@ class Job {
     };
   }
 
-  /**
-   * Given a job id, return data about job and its posts.
+  /** Given a job id, return data about job and its posts.
    *
    * Returns {id, name, city, state, streetAddr, adminId, adminEmail}
    *    where posts is [{id, datePosted, postedBy, deadline, progress, urgency, content}, ...]
@@ -90,7 +101,8 @@ class Job {
    * Throw NotFoundError if job not found.
    **/
 
-  static async getJob(jobId) {
+  static async getJob(jobId, userId) {
+    // Get data for given job
     const result = await db.query(
       `SELECT jobs.id,
               jobs.name,
@@ -111,6 +123,7 @@ class Job {
 
     if (!job) throw new NotFoundError(`No job with id: ${jobId}`);
 
+    // Get post data for job if posts exist
     const jobPostsRes = await db.query(
       `SELECT posts.id,
               posts.date_posted AS "datePosted",
@@ -129,6 +142,7 @@ class Job {
 
     if (jobPostsRes.rows[0]) job.posts = jobPostsRes.rows.map((jp) => jp);
 
+    // Get users associated with the job
     const jobUserRes = await db.query(
       `SELECT users.id,
               users.email,
@@ -146,7 +160,141 @@ class Job {
 
     if (jobUserRes.rows[0]) job.users = jobUserRes.rows.map((ju) => ju);
 
+    // Determine if current user has job privileges
+    const userPrivilegeRes = await db.query(
+      `SELECT user_id 
+        FROM job_privileges AS jp
+        WHERE jp.job_id = $1`,
+      [jobId]
+    );
+
+    const privilegedUsers = userPrivilegeRes.rows.map((up) => up.user_id);
+    job.privilege = privilegedUsers.includes(userId);
+
     return job;
+  }
+
+  /** Given job id and user id, create job associations
+   *
+   * Create privilege associations if privilege is truthy
+   *
+   * Returns a message depending on whether privilege is updated or not
+   *
+   * Throws BadRequestError if user is already associated with the job
+   */
+
+  static async associate(jobId, userId, privilege) {
+    const checkRes = await db.query(
+      `SELECT *
+        FROM job_associations
+        WHERE job_id = $1 AND user_id = $2`,
+      [jobId, userId]
+    );
+
+    if (checkRes.rows)
+      throw new BadRequestError("The user is already associated with this job");
+
+    if (!privilege) {
+      await db.query(
+        `INSERT INTO job_associations
+          (job_id, user_id)
+          VALUES($1, $2)`,
+        [jobId, userId]
+      );
+
+      return { message: "You have been added to the project!" };
+    }
+    if (privilege) {
+      await db.query(
+        `INSERT INTO job_associations
+          (job_id, user_id)
+          VALUES($1, $2)`,
+        [jobId, userId]
+      );
+
+      await db.query(
+        `INSERT INTO job_privileges
+          (job_id, user_id)
+          VALUES($1, $2)`,
+        [jobId, userId]
+      );
+
+      return {
+        message: "You have been added to the project as a trusted user!",
+        detail: "As a trusted user, you may invite other users to the project!",
+      };
+    }
+  }
+
+  /** Given a job id and a user id, delete associations
+   *
+   * Deletes job privileges as well
+   *  If a user is removed from a project, their privilege should be removed also
+   *
+   * Returns a message
+   *
+   * Throws NotFoundError if the association doesn't exist
+   */
+
+  static async dissociate(jobId, userId) {
+    const checkRes = await db.query(
+      `SELECT *
+        FROM job_associations
+        WHERE job_id = $1 AND user_id = $2`,
+      [jobId, userId]
+    );
+
+    if (!checkRes.rows)
+      throw new NotFoundError("The user is not associated with this job");
+
+    await db.query(
+      `DELETE FROM job_associations
+        WHERE job_id = $1 AND user_id = $2`,
+      [jobId, userId]
+    );
+
+    await db.query(
+      `DELETE FROM job_privileges
+        WHERE job_id = $1 AND user_id = $2`,
+      [jobId, userId]
+    );
+
+    return {
+      message: "The user was removed successfully",
+    };
+  }
+
+  /** Given a job id and user id, bestow job privileges to a user
+   *
+   * Creates association in job_privileges table
+   *
+   * Returns a message
+   *
+   * Throws BadRequestError if the user is not associated to the given job
+   */
+
+  static async givePrivilege(jobId, userId) {
+    const checkRes = await db.query(
+      `SELECT *
+        FROM job_associations
+        WHERE job_id = $1 AND user_id = $2`,
+      [jobId, userId]
+    );
+
+    if (!checkRes.rows)
+      throw new NotFoundError("The user is not associated with this job");
+
+    await db.query(
+      `INSERT INTO job_privileges
+        (job_id, user_id)
+        VALUES($1, $2)`,
+      [jobId, userId]
+    );
+
+    return {
+      message: "You have been added to the project as a trusted user!",
+      detail: "As a trusted user, you may invite other users to the project!",
+    };
   }
 }
 

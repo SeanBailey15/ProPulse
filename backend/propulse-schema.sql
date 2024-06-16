@@ -66,13 +66,13 @@ CREATE TABLE images (
 );
 
 CREATE TABLE job_associations (
-    job_id INTEGER REFERENCES jobs(id) NOT NULL,
+    job_id INTEGER REFERENCES jobs(id) ON DELETE CASCADE NOT NULL,
     user_id INTEGER REFERENCES users(id) NOT NULL,
     PRIMARY KEY (job_id, user_id)
 );
 
 CREATE TABLE job_privileges (
-    job_id INTEGER REFERENCES jobs(id) NOT NULL,
+    job_id INTEGER REFERENCES jobs(id) ON DELETE CASCADE NOT NULL,
     user_id INTEGER REFERENCES users(id) NOT NULL,
     PRIMARY KEY (job_id, user_id)
 );

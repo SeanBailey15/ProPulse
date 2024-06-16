@@ -10,9 +10,29 @@ const User = require("../models/user");
 const Job = require("../models/job");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 const { createToken } = require("../helpers/tokens");
-const { ensureLoggedIn, ensureSelf } = require("../middleware/auth");
+const {
+  ensureLoggedIn,
+  ensureSelf,
+  blockRoute,
+} = require("../middleware/auth");
 
 const router = express.Router();
+
+/** GET / => { users }
+ *
+ * Returns [{ id, email, firstName, lastName, phone, organization, title, profileImg, active, subscriptions }, ...]
+ *
+ * Authorization: Blocked to all until use becomes evident, dev purposes for now
+ */
+
+router.get("/", blockRoute, async function (req, res, next) {
+  try {
+    const users = await User.getAll();
+    return res.json({ users });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 /** GET /id => { user }
  *
@@ -38,11 +58,9 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
 
     if (user.jobs) {
       let userJobIds = user.jobs.map((j) => j.id);
-      console.log(`USER JOB IDS`, userJobIds);
       for (let jobId of res.locals.user.jobs) {
         if (userJobIds.includes(jobId)) jobRelationships.push(jobId);
       }
-      console.log(jobRelationships);
     }
 
     if (jobRelationships.length === 0) throw new UnauthorizedError();
