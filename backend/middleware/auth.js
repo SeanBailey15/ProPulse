@@ -5,6 +5,7 @@
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
+const Job = require("../models/job");
 
 /** Middleware: Block access to route
  *
@@ -44,7 +45,7 @@ function authenticateJWT(req, res, next) {
   }
 }
 
-/** Middleware to use when they must be logged in.
+/** Middleware to use when user must be logged in.
  *
  * If not, raises Unauthorized.
  */
@@ -83,10 +84,39 @@ function ensureSelf(req, res, next) {
   return next();
 }
 
+/** Middleware to use when current user must have job privileges
+ *
+ * Job id and current user id must be associated in job_privileges table of database
+ *
+ * If not, raises Unauthorized
+ */
+
+async function ensurePrivileges(req, res, next) {
+  const jobId = req.params.id;
+  const userId = res.locals.user.id;
+  const check = await Job.isTrusted(jobId, userId);
+
+  if (check === false) throw new UnauthorizedError();
+
+  return next();
+}
+
+async function ensureAdmin(req, res, next) {
+  const jobId = req.params.id;
+  const userId = res.locals.user.id;
+  const job = await Job.getJob(jobId, userId);
+
+  if (job.adminId !== userId) throw new UnauthorizedError();
+
+  return next();
+}
+
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
   ensureJobMatch,
   ensureSelf,
+  ensurePrivileges,
+  ensureAdmin,
   blockRoute,
 };

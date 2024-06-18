@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://propulse.com/jobUpdate.schema.json",
+  "title": "Update Job",
+  "description": "Update a job in the database",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "city": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "state": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 2
+    },
+    "streetAddr": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 50
+    }
+  },
+  "additionalProperties": false,
+  "required": []
+}

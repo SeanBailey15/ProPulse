@@ -18,7 +18,8 @@ CREATE TABLE jobs (
     city TEXT,
     state TEXT,
     street_addr TEXT,
-    admin INTEGER REFERENCES users(id) NOT NULL
+    admin INTEGER REFERENCES users(id) NOT NULL,
+    date_created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE posts (

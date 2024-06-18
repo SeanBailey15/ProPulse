@@ -3,18 +3,24 @@
 /** Routes for jobs. */
 
 const jsonschema = require("jsonschema");
-
+const jwt = require("jsonwebtoken");
+const { SECRET_KEY, BASE_URL } = require("../config");
 const express = require("express");
-const { BadRequestError } = require("../expressError");
+
+const { BadRequestError, NotFoundError } = require("../expressError");
 const Job = require("../models/job");
 const User = require("../models/user");
 const jobNewSchema = require("../schemas/jobNew.json");
-const inviteJobSchema = require("../schemas/inviteJob.json");
+const jobInviteSchema = require("../schemas/jobInvite.json");
+const jobUpdateSchema = require("../schemas/jobUpdate.json");
 const { createToken } = require("../helpers/tokens");
+const { sendPushNotification } = require("../helpers/pushNotification");
 const {
   ensureLoggedIn,
   ensureJobMatch,
   ensureSelf,
+  ensurePrivileges,
+  ensureAdmin,
 } = require("../middleware/auth");
 
 const router = express.Router();
@@ -22,7 +28,9 @@ const router = express.Router();
 /** POST / { job }  => { job }
  *
  * Creates a new job
+ *
  * Creates an updated token for auth
+ *
  * Returns job data
  *
  * Authorization: Must be logged in
@@ -56,8 +64,66 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
+/** POST /invite/:id => { pushToken }
+ *
+ * Receives request body data for an invite.
+ *
+ * Processes the data to form a JWT
+ *
+ * Sends the token with the invite link as a query string
+ *  through a push notification to recipient
+ *
+ * Returns a message if successful
+ *
+ * Throws Errors depending on data passed to route
+ *
+ * Authorization: Must be logged in
+ */
+
+router.post(
+  "/invite/:id",
+  ensureLoggedIn,
+  ensurePrivileges,
+  async function (req, res, next) {
+    try {
+      const validator = jsonschema.validate(req.body, jobInviteSchema);
+
+      if (!validator.valid) {
+        const errs = validator.errors.map((e) => e.stack);
+        throw new BadRequestError(errs);
+      }
+
+      const sender = res.locals.user.email;
+
+      const jobId = req.params.id;
+      const { invited, privilege } = req.body;
+
+      const recipient = await User.getByEmail(invited);
+
+      const tokenPayload = {
+        invited: recipient.id,
+        privilege: privilege,
+        jobId: jobId,
+      };
+
+      const token = jwt.sign(tokenPayload, SECRET_KEY);
+
+      const notificationPayload = {
+        title: `${recipient.firstName}, you have an invitation!`,
+        body: `${sender} has invited you to a job. Click to accept.`,
+        url: `${BASE_URL}/jobs/accept?token=${token}`,
+      };
+
+      await sendPushNotification(recipient.subscriptions, notificationPayload);
+
+      return res.json({ message: "Invitation sent successfully" });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 // ************************************************************************************
-// THIS WILL NEED TO BE CHANGED ONCE INVITE ROUTE IS FIGURED OUT WITH JWTs!!!
 
 /** POST /accept/:id => { message }
  *
@@ -65,31 +131,19 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  *
  * Returns a message depending on invite with/without privilege
  *
- * Authorization: Must be logged in
- *
  * Throws BadRequest if current user is not the invited user
+ *
+ * Authorization: Must be logged in
  */
 
-router.post("/accept/:id", ensureLoggedIn, async function (req, res, next) {
+router.post("/accept", ensureLoggedIn, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, inviteJobSchema);
+    const { token } = req.body;
+    const decoded = jwt.verify(token, SECRET_KEY);
 
-    if (!validator.valid) {
-      const errs = validator.errors.map((e) => e.stack);
-      throw new BadRequestError(errs);
-    }
+    const { invited, privilege, jobId } = decoded;
 
-    const jobId = req.params.id;
-    const userId = res.locals.user.id;
-    const { invited, privilege } = req.body;
-
-    const userRes = await User.getByEmail(invited);
-    const invitedUser = userRes.rows[0];
-
-    if (userId !== invitedUser.id)
-      throw new BadRequestError("You were not invited to this project!");
-
-    const message = await Job.associate(jobId, userId, privilege);
+    const message = await Job.associate(jobId, invited, privilege);
 
     return res.json({ message });
   } catch (err) {
@@ -146,6 +200,98 @@ router.get(
     try {
       const jobsRes = await Job.findUserJobs(req.params.id);
       return res.json({ jobs: jobsRes });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+/** POST /:id/remove/:userId => { message }
+ *
+ * Deletes a job-user association from the database
+ *
+ * Returns a message
+ *
+ * Authorization: Must be logged in
+ */
+
+router.post(
+  "/:id/remove/:userId",
+  ensureLoggedIn,
+  ensurePrivileges,
+  async function (req, res, next) {
+    try {
+      const jobId = req.params.id;
+      const userId = req.params.userId;
+
+      const message = await Job.dissociate(jobId, userId);
+      return res.json({ message });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+/** POST /:id/trust?:userId => { message }
+ *
+ * Creates job-user privilege association
+ *
+ * Returns a message
+ *
+ * Authorization: Must be logged in
+ */
+
+router.post(
+  "/:id/trust/:userId",
+  ensureLoggedIn,
+  ensurePrivileges,
+  async function (req, res, next) {
+    try {
+      const jobId = req.params.id;
+      const userId = req.params.userId;
+
+      const message = await Job.givePrivilege(jobId, userId);
+      return res.json({ message });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.patch(
+  "/:id",
+  ensureLoggedIn,
+  ensurePrivileges,
+  async function (req, res, next) {
+    try {
+      const validator = jsonschema.validate(req.body, jobUpdateSchema);
+
+      if (!validator.valid) {
+        const errs = validator.errors.map((e) => e.stack);
+        throw new BadRequestError(errs);
+      }
+
+      const job = await Job.update(req.params.id, req.body);
+
+      return res.json({ job, message: "Job updated successfully" });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.patch(
+  "/:id/transfer/:userId",
+  ensureLoggedIn,
+  ensureAdmin,
+  async function (req, res, next) {
+    try {
+      const jobId = req.params.id;
+      const userId = req.params.userId;
+
+      const message = await Job.tansferAdmin(jobId, userId);
+
+      return res.json({ message });
     } catch (err) {
       return next(err);
     }

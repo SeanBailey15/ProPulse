@@ -2,11 +2,8 @@
 
 const db = require("../db");
 
-const {
-  NotFoundError,
-  BadRequestError,
-  UnauthorizedError,
-} = require("../expressError");
+const { NotFoundError, BadRequestError } = require("../expressError");
+const { sqlForPartialUpdate } = require("../helpers/sql");
 
 /** Related functions for jobs. */
 
@@ -70,13 +67,15 @@ class Job {
               jobs.state,
               jobs.street_addr AS "streetAddr",
               jobs.admin AS "adminId",
+              jobs.date_created,
               users.email AS "adminEmail"
             FROM jobs
             JOIN job_associations AS ja
             ON jobs.id = ja.job_id
             JOIN users
             ON jobs.admin = users.id
-            WHERE ja.user_id = $1`,
+            WHERE ja.user_id = $1
+            ORDER BY date_created`,
       [userId]
     );
 
@@ -191,7 +190,7 @@ class Job {
       [jobId, userId]
     );
 
-    if (checkRes.rows)
+    if (checkRes.rows[0])
       throw new BadRequestError("The user is already associated with this job");
 
     if (!privilege) {
@@ -228,7 +227,7 @@ class Job {
 
   /** Given a job id and a user id, delete associations
    *
-   * Deletes job privileges as well
+   * Deletes job privileges as well.
    *  If a user is removed from a project, their privilege should be removed also
    *
    * Returns a message
@@ -244,7 +243,7 @@ class Job {
       [jobId, userId]
     );
 
-    if (!checkRes.rows)
+    if (!checkRes.rows[0])
       throw new NotFoundError("The user is not associated with this job");
 
     await db.query(
@@ -274,15 +273,25 @@ class Job {
    */
 
   static async givePrivilege(jobId, userId) {
-    const checkRes = await db.query(
+    const checkJobRes = await db.query(
       `SELECT *
         FROM job_associations
         WHERE job_id = $1 AND user_id = $2`,
       [jobId, userId]
     );
 
-    if (!checkRes.rows)
+    if (!checkJobRes.rows[0])
       throw new NotFoundError("The user is not associated with this job");
+
+    const checkPrivilegeRes = await db.query(
+      `SELECT *
+        FROM job_privileges
+        WHERE job_id = $1 AND user_id = $2`,
+      [jobId, userId]
+    );
+
+    if (checkPrivilegeRes.rows[0])
+      throw new BadRequestError("The user already has privileges for this job");
 
     await db.query(
       `INSERT INTO job_privileges
@@ -295,6 +304,80 @@ class Job {
       message: "You have been added to the project as a trusted user!",
       detail: "As a trusted user, you may invite other users to the project!",
     };
+  }
+
+  /** Given a job id and user id, check for job_privileges association
+   *
+   * Used in middleware ensurePrivileges function
+   *
+   * Returns true if found, false if not found
+   */
+
+  static async isTrusted(jobId, userId) {
+    const check = await db.query(
+      `SELECT * FROM job_privileges WHERE job_id = $1 AND user_id = $2`,
+      [jobId, userId]
+    );
+
+    return check.rows[0] ? true : false;
+  }
+
+  /** Update job data with provided data
+   *
+   * This is a partial update, not all job properties are required in the data
+   *
+   * Data can include:
+   *  { name, city, state, streetAddr }
+   *
+   * Returns { name, city, state, streetAddr }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+  static async update(jobId, data) {
+    const { setCols, values } = sqlForPartialUpdate(data, {
+      streetAddr: "street_addr",
+    });
+
+    const jobIdVarIdx = "$" + (values.length + 1);
+
+    const querySql = `UPDATE jobs
+                      SET ${setCols}
+                      WHERE id = ${jobIdVarIdx}
+                      RETURNING id,
+                                name,
+                                city,
+                                state,
+                                street_addr AS "streetAddr",
+                                admin`;
+
+    const result = await db.query(querySql, [...values, jobId]);
+    const job = result.rows[0];
+
+    if (!job) throw new NotFoundError(`Job Does Not Exist: id ${jobId}`);
+
+    return job;
+  }
+
+  /** Given a job id and user id, transfer admin on job to user
+   *
+   * Returns message on success
+   *
+   * Throws BadRequestError on failure
+   */
+
+  static async tansferAdmin(jobId, userId) {
+    const transferRes = await db.query(
+      `UPDATE jobs
+        SET admin = $1
+        WHERE jobs.id = $2`,
+      [userId, jobId]
+    );
+
+    if (transferRes.rowCount === 0)
+      throw new BadRequestError("Job not found or transfer unsuccessful");
+
+    return { message: "Admin transfer successful" };
   }
 }
 
