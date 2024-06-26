@@ -71,7 +71,7 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
-/** PATCH /id {user} => {user, token}
+/** PATCH /:id {user} => {user, token}
  *
  * Data can include:
  *  { email, firstName, lastName, phone, organization, title, profileImg }

@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const { SECRET_KEY, BASE_URL } = require("../config");
 const express = require("express");
 
-const { BadRequestError, NotFoundError } = require("../expressError");
+const { BadRequestError } = require("../expressError");
 const Job = require("../models/job");
 const User = require("../models/user");
 const jobNewSchema = require("../schemas/jobNew.json");
@@ -232,7 +232,7 @@ router.post(
   }
 );
 
-/** POST /:id/trust?:userId => { message }
+/** POST /:id/trust/:userId => { message }
  *
  * Creates job-user privilege association
  *
@@ -258,6 +258,22 @@ router.post(
   }
 );
 
+/** PATCH /:id { data } => { job }
+ *
+ * Given a job id and data, update relevant job properties
+ *
+ * Data can include:
+ *  { name, city, state, streetAddr }
+ *
+ * Returns:
+ *  {
+ *    job: { id, name, city, state, streetAddr, admin },
+ *    message
+ *  }
+ *
+ * Authorization: Must be logged in and have job privileges
+ */
+
 router.patch(
   "/:id",
   ensureLoggedIn,
@@ -280,6 +296,17 @@ router.patch(
   }
 );
 
+/** PATCH /:id/transfer/:userId => { message }
+ *
+ * Given a job id and a target user id, change admin for the job
+ *
+ * Returns a message on success
+ *
+ * Throws BadRequestError if new admin is not associated with the job
+ *
+ * Authorization: Must be logged in and current admin of the job
+ */
+
 router.patch(
   "/:id/transfer/:userId",
   ensureLoggedIn,
@@ -289,7 +316,28 @@ router.patch(
       const jobId = req.params.id;
       const userId = req.params.userId;
 
-      const message = await Job.tansferAdmin(jobId, userId);
+      const newAdmin = await User.get(userId);
+
+      const newAdminJobIds = newAdmin.jobs.map((job) => job.id);
+
+      if (!newAdminJobIds.includes(+jobId))
+        throw new BadRequestError(
+          `The recipient is not associated with this job`
+        );
+
+      const message = await Job.transferAdmin(jobId, userId);
+
+      if (message) {
+        const sender = res.locals.user.email;
+
+        const notificationPayload = {
+          title: `${newAdmin.firstName}, you are now the admin!`,
+          body: `${sender} has made you the admin. Click the link for more info.`,
+          url: `${BASE_URL}/jobs/${jobId}`,
+        };
+
+        await sendPushNotification(newAdmin.subscriptions, notificationPayload);
+      }
 
       return res.json({ message });
     } catch (err) {

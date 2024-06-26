@@ -183,6 +183,8 @@ class Job {
    */
 
   static async associate(jobId, userId, privilege) {
+    const hasPrivilege = privilege.toLowerCase() === "yes";
+
     const checkRes = await db.query(
       `SELECT *
         FROM job_associations
@@ -193,24 +195,14 @@ class Job {
     if (checkRes.rows[0])
       throw new BadRequestError("The user is already associated with this job");
 
-    if (!privilege) {
-      await db.query(
-        `INSERT INTO job_associations
+    await db.query(
+      `INSERT INTO job_associations
           (job_id, user_id)
           VALUES($1, $2)`,
-        [jobId, userId]
-      );
+      [jobId, userId]
+    );
 
-      return { message: "You have been added to the project!" };
-    }
-    if (privilege) {
-      await db.query(
-        `INSERT INTO job_associations
-          (job_id, user_id)
-          VALUES($1, $2)`,
-        [jobId, userId]
-      );
-
+    if (hasPrivilege) {
       await db.query(
         `INSERT INTO job_privileges
           (job_id, user_id)
@@ -223,6 +215,7 @@ class Job {
         detail: "As a trusted user, you may invite other users to the project!",
       };
     }
+    return { message: "You have been added to the project!" };
   }
 
   /** Given a job id and a user id, delete associations
@@ -232,7 +225,7 @@ class Job {
    *
    * Returns a message
    *
-   * Throws NotFoundError if the association doesn't exist
+   * Throws BadRequestError if the association doesn't exist
    */
 
   static async dissociate(jobId, userId) {
@@ -244,7 +237,7 @@ class Job {
     );
 
     if (!checkRes.rows[0])
-      throw new NotFoundError("The user is not associated with this job");
+      throw new BadRequestError("The user is not associated with this job");
 
     await db.query(
       `DELETE FROM job_associations
@@ -270,6 +263,7 @@ class Job {
    * Returns a message
    *
    * Throws BadRequestError if the user is not associated to the given job
+   *  or user already has privileges
    */
 
   static async givePrivilege(jobId, userId) {
@@ -281,7 +275,7 @@ class Job {
     );
 
     if (!checkJobRes.rows[0])
-      throw new NotFoundError("The user is not associated with this job");
+      throw new BadRequestError("The user is not associated with this job");
 
     const checkPrivilegeRes = await db.query(
       `SELECT *
@@ -329,7 +323,7 @@ class Job {
    * Data can include:
    *  { name, city, state, streetAddr }
    *
-   * Returns { name, city, state, streetAddr }
+   * Returns { name, city, state, streetAddr, adminId }
    *
    * Throws NotFoundError if not found.
    */
@@ -349,7 +343,7 @@ class Job {
                                 city,
                                 state,
                                 street_addr AS "streetAddr",
-                                admin`;
+                                admin AS "adminId"`;
 
     const result = await db.query(querySql, [...values, jobId]);
     const job = result.rows[0];
@@ -366,7 +360,7 @@ class Job {
    * Throws BadRequestError on failure
    */
 
-  static async tansferAdmin(jobId, userId) {
+  static async transferAdmin(jobId, userId) {
     const transferRes = await db.query(
       `UPDATE jobs
         SET admin = $1
