@@ -84,7 +84,7 @@ class Job {
       return userJobs;
     }
     return {
-      message: "The user is not associated with any jobs.",
+      message: "The user is not associated with any projects",
     };
   }
 
@@ -120,7 +120,7 @@ class Job {
     );
     const job = result.rows[0];
 
-    if (!job) throw new NotFoundError(`No job with id: ${jobId}`);
+    if (!job) throw new NotFoundError(`No project with the id: ${jobId}`);
 
     // Get post data for job if posts exist
     const jobPostsRes = await db.query(
@@ -193,7 +193,7 @@ class Job {
     );
 
     if (checkRes.rows[0])
-      throw new BadRequestError("The user is already associated with this job");
+      throw new BadRequestError("You are already associated with this project");
 
     await db.query(
       `INSERT INTO job_associations
@@ -237,7 +237,7 @@ class Job {
     );
 
     if (!checkRes.rows[0])
-      throw new BadRequestError("The user is not associated with this job");
+      throw new BadRequestError("The user is not associated with this project");
 
     await db.query(
       `DELETE FROM job_associations
@@ -252,7 +252,7 @@ class Job {
     );
 
     return {
-      message: "The user was removed successfully",
+      message: "The user was removed from the project",
     };
   }
 
@@ -275,7 +275,7 @@ class Job {
     );
 
     if (!checkJobRes.rows[0])
-      throw new BadRequestError("The user is not associated with this job");
+      throw new BadRequestError("The user is not associated with this project");
 
     const checkPrivilegeRes = await db.query(
       `SELECT *
@@ -285,7 +285,9 @@ class Job {
     );
 
     if (checkPrivilegeRes.rows[0])
-      throw new BadRequestError("The user already has privileges for this job");
+      throw new BadRequestError(
+        "The user already has privileges for this project"
+      );
 
     await db.query(
       `INSERT INTO job_privileges
@@ -295,8 +297,8 @@ class Job {
     );
 
     return {
-      message: "You have been added to the project as a trusted user!",
-      detail: "As a trusted user, you may invite other users to the project!",
+      message: "You have added the user to the project as a trusted user!",
+      detail: "As a trusted user, they may invite other users to the project!",
     };
   }
 
@@ -348,7 +350,8 @@ class Job {
     const result = await db.query(querySql, [...values, jobId]);
     const job = result.rows[0];
 
-    if (!job) throw new NotFoundError(`Job Does Not Exist: id ${jobId}`);
+    if (!job)
+      throw new NotFoundError(`Project with id: ${jobId} does not exist`);
 
     return job;
   }
@@ -369,7 +372,7 @@ class Job {
     );
 
     if (transferRes.rowCount === 0)
-      throw new BadRequestError("Job not found or transfer unsuccessful");
+      throw new BadRequestError("Project not found or transfer unsuccessful");
 
     return { message: "Admin transfer successful" };
   }

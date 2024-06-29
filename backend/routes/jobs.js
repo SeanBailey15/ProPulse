@@ -110,7 +110,7 @@ router.post(
 
       const notificationPayload = {
         title: `${recipient.firstName}, you have an invitation!`,
-        body: `${sender} has invited you to a job. Click to accept.`,
+        body: `${sender} has invited you to a project. Click to accept.`,
         url: `${BASE_URL}/jobs/accept?token=${token}`,
       };
 
@@ -289,7 +289,7 @@ router.patch(
 
       const job = await Job.update(req.params.id, req.body);
 
-      return res.json({ job, message: "Job updated successfully" });
+      return res.json({ job, message: "Project info updated successfully" });
     } catch (err) {
       return next(err);
     }
@@ -322,7 +322,7 @@ router.patch(
 
       if (!newAdminJobIds.includes(+jobId))
         throw new BadRequestError(
-          `The recipient is not associated with this job`
+          `The recipient is not associated with this project`
         );
 
       const message = await Job.transferAdmin(jobId, userId);

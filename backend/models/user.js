@@ -231,6 +231,13 @@ class User {
    */
 
   static async update(userId, data) {
+    const checkRes = await db.query(`SELECT * FROM users WHERE id = $1`, [
+      userId,
+    ]);
+
+    if (!checkRes.rows.length)
+      throw new NotFoundError(`No user with id: ${userId}`);
+
     const { setCols, values } = sqlForPartialUpdate(data, {
       firstName: "first_name",
       lastName: "last_name",
@@ -255,8 +262,6 @@ class User {
     const result = await db.query(querySql, [...values, userId]);
     const user = result.rows[0];
 
-    if (!user) throw new NotFoundError(`User Does Not Exist: id ${userId}`);
-
     return user;
   }
 
@@ -275,7 +280,7 @@ class User {
 
     const user = userCheck.rows[0];
 
-    if (!user) throw new NotFoundError("User does not exist in database");
+    if (!user) throw new NotFoundError(`No user with id: ${userId}`);
 
     await db.query(
       `UPDATE users
@@ -284,7 +289,7 @@ class User {
       [userId]
     );
 
-    return "User deactivated";
+    return { message: "User deactivated" };
   }
 
   /** Updates user notification subscriptions
@@ -309,7 +314,7 @@ class User {
       );
 
       if (existingSubscription) {
-        throw new Error("Subscription already exists");
+        throw new BadRequestError("Subscription already exists");
       }
     }
 
@@ -321,9 +326,7 @@ class User {
       [subscription, userId]
     );
 
-    const userSubs = subRes.rows[0];
-
-    return userSubs;
+    return { message: "Subscription added successfully" };
   }
 }
 

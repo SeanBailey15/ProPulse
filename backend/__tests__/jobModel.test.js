@@ -146,7 +146,7 @@ describe("findUserJobs", function () {
   test("gets user4's jobs (no jobs = message)", async function () {
     let res = await Job.findUserJobs(4);
     expect(res).toEqual({
-      message: "The user is not associated with any jobs.",
+      message: "The user is not associated with any projects",
     });
   });
 });
@@ -267,7 +267,7 @@ describe("dissociate", function () {
   test("dissociate job1 with user2", async function () {
     let res = await Job.dissociate(1, 2);
     expect(res).toEqual({
-      message: "The user was removed successfully",
+      message: "The user was removed from the project",
     });
   });
   test("throws BadRequestError", async function () {
@@ -286,8 +286,8 @@ describe("givePrivilege", function () {
   test("grant privilege for job1 to user2", async function () {
     let res = await Job.givePrivilege(1, 2);
     expect(res).toEqual({
-      message: "You have been added to the project as a trusted user!",
-      detail: "As a trusted user, you may invite other users to the project!",
+      message: "You have been added the user to the project as a trusted user!",
+      detail: "As a trusted user, they may invite other users to the project!",
     });
   });
   test("throws BadRequestError ()", async function () {
@@ -296,7 +296,9 @@ describe("givePrivilege", function () {
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
-      expect(err.message).toEqual("The user is not associated with this job");
+      expect(err.message).toEqual(
+        "The user is not associated with this project"
+      );
     }
   });
   test("throws BadRequestError ()", async function () {
@@ -306,7 +308,7 @@ describe("givePrivilege", function () {
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
       expect(err.message).toEqual(
-        "The user already has privileges for this job"
+        "The user already has privileges for this project"
       );
     }
   });
