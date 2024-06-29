@@ -218,6 +218,31 @@ class User {
     return users;
   }
 
+  /** Get suscriptions for users tagged in a post
+   *
+   * Takes an array of user ids
+   *
+   * Returns an array of subscriptions for push notifications
+   */
+
+  static async getTaggedUserSubs(userIdArray) {
+    let recipients = [];
+    const idSubQuery = `
+    SELECT subscriptions
+      FROM users
+      WHERE id = ANY($1::integer[])`;
+
+    const idSubRes = await db.query(idSubQuery, [userIdArray]);
+
+    idSubRes.rows.map((user) => {
+      if (user.subscriptions) {
+        user.subscriptions.map((s) => recipients.push(s));
+      }
+    });
+
+    return recipients;
+  }
+
   /** Update user data with provided data
    *
    * This is a partial update, not all user properties are required in the data
