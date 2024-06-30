@@ -20,7 +20,7 @@ const router = express.Router();
 
 /** GET / => { users }
  *
- * Returns [{ id, email, firstName, lastName, phone, organization, title, profileImg, active, subscriptions }, ...]
+ * Returns [{ id, email, firstName, lastName, phone, organization, title, active, subscriptions }, ...]
  *
  * Authorization: Blocked to all until use becomes evident, dev purposes for now
  */
@@ -74,10 +74,10 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
 /** PATCH /:id {user} => {user, token}
  *
  * Data can include:
- *  { email, firstName, lastName, phone, organization, title, profileImg }
+ *  { email, firstName, lastName, phone, organization, title }
  *
  * Returns:
- *    user: { email, firstName, lastName, phone, organization, title, profileImg }
+ *    user: { email, firstName, lastName, phone, organization, title }
  *    token: { token }
  */
 

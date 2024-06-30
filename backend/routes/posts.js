@@ -5,7 +5,7 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { BadRequestError } = require("../expressError");
+const { BadRequestError, UnauthorizedError } = require("../expressError");
 const Post = require("../models/post");
 const User = require("../models/user");
 const postNewSchema = require("../schemas/postNew.json");
@@ -70,7 +70,7 @@ router.post("/:jobId", ensureLoggedIn, async function (req, res, next) {
  * Authorization: Must be logged in
  **/
 
-router.post(":postId/reply", ensureLoggedIn, async function (req, res, next) {
+router.post("/reply/:postId", ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, replyNewSchema);
     if (!validator.valid) {
@@ -88,9 +88,9 @@ router.post(":postId/reply", ensureLoggedIn, async function (req, res, next) {
 
     if (subscriptions.length) {
       const notificationPayload = {
-        title: `${res.locals.user.email} tagged you in a post!`,
+        title: `${res.locals.user.email} tagged you in a reply!`,
         body: `Click the link to view the message.`,
-        url: `${BASE_URL}/posts/${reply.replyTo}/replies/${reply.id}`,
+        url: `${BASE_URL}/posts/replies/${reply.id}`,
       };
 
       await sendPushNotification(subscriptions, notificationPayload);
@@ -102,14 +102,52 @@ router.post(":postId/reply", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
-router.get("/:jobId/:id", async function (req, res, next) {
+/** GET / { post id } => { post }
+ *
+ * Gets post information from the database
+ *
+ * Authorization: Must be logged in
+ *  Functional check to see if current user's job associations match the job id of the post
+ */
+
+router.get("/:postId", ensureLoggedIn, async function (req, res, next) {
   try {
-    const post = await Post.getPost(req.params.id);
+    const post = await Post.getPost(req.params.postId);
+
+    if (!res.locals.user.jobs)
+      throw new UnauthorizedError("You are not associated with this project");
+    await Post.checkCurrentUserJobs(res.locals.user.jobs, post.jobId);
 
     return res.json({ post });
   } catch (err) {
     return next(err);
   }
 });
+
+/** GET / { reply id } => { reply }
+ *
+ * Gets reply information from the database
+ *
+ * Authorization: Must be logged in
+ *  Functional check to see if current user's job associations match the job id of the reply
+ */
+
+router.get(
+  "/replies/:replyId",
+  ensureLoggedIn,
+  async function (req, res, next) {
+    try {
+      const reply = await Post.getReply(req.params.replyId);
+
+      if (!res.locals.user.jobs)
+        throw new UnauthorizedError("You are not associated with this project");
+      await Post.checkCurrentUserJobs(res.locals.user.jobs, reply.jobId);
+
+      return res.json({ reply });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
 
 module.exports = router;

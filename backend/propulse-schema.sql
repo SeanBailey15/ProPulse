@@ -7,7 +7,6 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     organization TEXT NOT NULL,
     title TEXT NOT NULL,
-    profile_img TEXT DEFAULT NULL,
     active BOOLEAN DEFAULT TRUE,
     subscriptions JSON[] DEFAULT NULL
 );
@@ -33,11 +32,11 @@ CREATE TABLE posts (
     is_reply BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE post_tagged_users (
-    post_id INTEGER REFERENCES posts(id) NOT NULL,
-    user_id INTEGER REFERENCES users(id) NOT NULL,
-    PRIMARY KEY (post_id, user_id)
-);
+-- CREATE TABLE post_tagged_users (
+--     post_id INTEGER REFERENCES posts(id) NOT NULL,
+--     user_id INTEGER REFERENCES users(id) NOT NULL,
+--     PRIMARY KEY (post_id, user_id)
+-- );
 
 CREATE TABLE replies (
     id SERIAL PRIMARY KEY,
@@ -50,11 +49,11 @@ CREATE TABLE replies (
     is_reply BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE reply_tagged_users (
-    reply_id INTEGER REFERENCES replies(id) NOT NULL,
-    user_id INTEGER REFERENCES users(id) NOT NULL,
-    PRIMARY KEY (reply_id, user_id)
-);
+-- CREATE TABLE reply_tagged_users (
+--     reply_id INTEGER REFERENCES replies(id) NOT NULL,
+--     user_id INTEGER REFERENCES users(id) NOT NULL,
+--     PRIMARY KEY (reply_id, user_id)
+-- );
 
 -- CREATE TABLE post_images (
 --     id SERIAL PRIMARY KEY,

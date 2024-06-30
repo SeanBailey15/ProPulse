@@ -18,7 +18,7 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 class User {
   /** authenticate user with email, password.
    *
-   * Returns { id, email, firstName, lastName, phone, organization, title, profileImg }
+   * Returns { id, email, firstName, lastName, phone, organization, title }
    *
    * Throws UnauthorizedError is user not found or wrong password.
    **/
@@ -33,8 +33,7 @@ class User {
               last_name AS "lastName",
               phone,
               organization,
-              title,
-              profile_img AS "profileImg"
+              title
            FROM users
            WHERE email = $1`,
       [email]
@@ -93,7 +92,7 @@ class User {
             organization,
             title)
            VALUES ($1, $2, $3, $4, $5, $6, $7)
-           RETURNING id, email, first_name AS "firstName", last_name AS "lastName", phone, organization, title, profile_img AS "profileImg"`,
+           RETURNING id, email, first_name AS "firstName", last_name AS "lastName", phone, organization, title`,
       [email, hashedPassword, firstName, lastName, phone, organization, title]
     );
 
@@ -120,7 +119,6 @@ class User {
               phone,
               organization,
               title,
-              profile_img AS "profileImg",
               active,
               subscriptions
            FROM users
@@ -157,10 +155,7 @@ class User {
 
   /** Get a user by their email
    *
-   * Used with site and job invites only
-   *  only id data required for these actions
-   *
-   * Returns { id, email, firstName, lastName, phone, organization, title, profileImg, active, subscription }
+   * Returns { id, email, firstName, lastName, phone, organization, title, active, subscription }
    *
    * Throws NotFound if user not found or is deactivated
    */
@@ -174,7 +169,6 @@ class User {
               phone,
               organization,
               title,
-              profile_img AS "profileImg",
               active,
               subscriptions
            FROM users
@@ -207,7 +201,6 @@ class User {
               phone,
               organization,
               title,
-              profile_img AS "profileImg",
               active,
               subscriptions
         FROM users`
@@ -248,9 +241,9 @@ class User {
    * This is a partial update, not all user properties are required in the data
    *
    * Data can include:
-   *  { email, firstName, lastName, phone, organization, title, profileImg }
+   *  { email, firstName, lastName, phone, organization, title }
    *
-   * Returns { email, firstName, lastName, phone, organization, title, profileImg, active, subscriptions }
+   * Returns { email, firstName, lastName, phone, organization, title, active, subscriptions }
    *
    * Throws NotFoundError if not found.
    */
@@ -266,7 +259,6 @@ class User {
     const { setCols, values } = sqlForPartialUpdate(data, {
       firstName: "first_name",
       lastName: "last_name",
-      profileImg: "profile_img",
     });
 
     const userIdVarIdx = "$" + (values.length + 1);
@@ -280,7 +272,6 @@ class User {
                                 phone,
                                 organization,
                                 title,
-                                profile_img AS "profileImg",
                                 active,
                                 subscriptions`;
 
@@ -293,7 +284,7 @@ class User {
   /** Deactivates a given user in the database.
    *
    * Toggles user.active to false, simulating deletion
-   *  and allowing for account recovery if they change their mind.
+   *  and allowing for account recovery if they change their mind.(To Be Added In Future Update)
    *
    * Returns a message.
    */
@@ -343,7 +334,7 @@ class User {
       }
     }
 
-    const subRes = await db.query(
+    await db.query(
       `UPDATE users
           SET subscriptions = array_append(subscriptions, $1)
           WHERE id = $2

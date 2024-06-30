@@ -127,9 +127,6 @@ class Job {
       `SELECT posts.id,
               posts.date_posted AS "datePosted",
               users.email AS "postedBy",
-              posts.deadline,
-              posts.progress,
-              posts.urgency,
               posts.content
             FROM posts
             JOIN users

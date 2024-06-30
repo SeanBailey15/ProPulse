@@ -2,7 +2,11 @@
 
 const db = require("../db");
 
-const { NotFoundError, BadRequestError } = require("../expressError");
+const {
+  NotFoundError,
+  BadRequestError,
+  UnauthorizedError,
+} = require("../expressError");
 const User = require("./user");
 
 /** Related functions for posts. */
@@ -54,15 +58,15 @@ class Post {
     if (!post) throw new BadRequestError(`Invalid Input`);
 
     // IF POST CREATION SUCCESS, INSERT RELEVANT IDS INTO post_tagged_users ASSOCIATION TABLE
-    await taggedIds.map((id) => {
-      db.query(
-        `INSERT into post_tagged_users(
-                post_id,
-                user_id)
-             VALUES( $1, $2)`,
-        [post.id, id]
-      );
-    });
+    // await taggedIds.map((id) => {
+    //   db.query(
+    //     `INSERT into post_tagged_users(
+    //             post_id,
+    //             user_id)
+    //          VALUES( $1, $2)`,
+    //     [post.id, id]
+    //   );
+    // });
 
     return post;
   }
@@ -111,22 +115,23 @@ class Post {
     if (!reply) throw new BadRequestError(`Invalid Input`);
 
     // IF REPLY CREATION SUCCESS, INSERT RELEVANT IDS INTO reply_tagged_users ASSOCIATION TABLE
-    await taggedIds.map((id) => {
-      db.query(
-        `INSERT into reply_tagged_users(
-                    reply_id,
-                    user_id)
-                 VALUES( $1, $2)`,
-        [reply.id, id]
-      );
-    });
+    // await taggedIds.map((id) => {
+    //   db.query(
+    //     `INSERT into reply_tagged_users(
+    //                 reply_id,
+    //                 user_id)
+    //              VALUES( $1, $2)`,
+    //     [reply.id, id]
+    //   );
+    // });
 
     return reply;
   }
 
   /** Given a post id, get post information
    *
-   * Returns { id, datePosted, postedBy, jobId, jobName, content}
+   * Returns { id, datePosted, creatorId, createdBy, jobId, jobName, content, isReply, taggedIds, taggedUsers }
+   *  Where taggedUsers is [{email}]
    */
 
   static async getPost(postId) {
@@ -138,8 +143,8 @@ class Post {
               posts.job_id AS "jobId",
               jobs.name AS "jobName",
               posts.content,
-              posts.tagged AS "taggedIds",
-              posts.is_reply AS "isReply"
+              posts.is_reply AS "isReply",
+              posts.tagged AS "taggedIds"
             FROM posts
             JOIN users
             ON posts.posted_by = users.id
@@ -152,6 +157,8 @@ class Post {
 
     if (!post) throw new NotFoundError(`No post with the id: ${postId}`);
 
+    // GET EMAILS FOR ALL TAGGED USERS AND CREATE AN ARRAY WITH DATA IF DATA EXISTS
+
     const emailQuery = `
     SELECT email
       FROM users
@@ -159,9 +166,93 @@ class Post {
 
     const emailRes = await db.query(emailQuery, [post.taggedIds]);
 
-    post.taggedUsers = emailRes.rows.map((row) => row.email);
+    if (emailRes.rows.length)
+      post.taggedUsers = emailRes.rows.map((row) => row.email);
+
+    // GET ALL REPLIES FOR THE POST AND CREATE AN ARRAY WITH DATA IF DATA EXISTS
+
+    const replyRes = await db.query(
+      `SELECT replies.id,
+              replies.date_posted AS "datePosted",
+              replies.posted_by AS "creatorId",
+              users.email AS "createdBy",
+              replies.content,
+              replies.is_reply AS "isReply",
+              replies.tagged AS "taggedIds"
+            FROM replies
+            JOIN users
+            ON replies.posted_by = users.id
+            WHERE replies.reply_to = $1`,
+      [postId]
+    );
+
+    if (replyRes.rows.length) post.replies = replyRes.rows.map((row) => row);
+
+    // GET EMAILS FOR USERS TAGGED IN REPLIES AND CREATE AN ARRAY WITH DATA IF IT EXISTS
+
+    const replyEmailQuery = `
+    SELECT email
+      FROM users
+      WHERE id = ANY($1::integer[])`;
+
+    const replyEmailPromises = post.replies.map(async (reply) => {
+      if (reply.taggedIds.length) {
+        const replyEmailRes = await db.query(replyEmailQuery, [
+          reply.taggedIds,
+        ]);
+        reply.taggedUsers = replyEmailRes.rows.map((row) => row.email);
+        return reply;
+      }
+    });
+
+    await Promise.all(replyEmailPromises);
 
     return post;
+  }
+
+  static async getReply(replyId) {
+    const result = await db.query(
+      `SELECT replies.id,
+              replies.date_posted AS "datePosted",
+              replies.posted_by AS "creatorId",
+              users.email AS "createdBy",
+              replies.reply_to AS "replyTo",
+              posts.job_id AS "jobId",
+              replies.content,
+              replies.is_reply AS "isReply",
+              replies.tagged AS "taggedIds"
+            FROM replies
+            JOIN users
+            ON replies.posted_by = users.id
+            JOIN posts
+            ON replies.reply_to = posts.id
+            WHERE replies.id = $1`,
+      [replyId]
+    );
+
+    const reply = result.rows[0];
+
+    if (!reply) throw new NotFoundError(`No reply with the id: ${replyId}`);
+
+    // GET EMAILS FOR ALL TAGGED USERS AND CREATE AN ARRAY WITH DATA IF DATA EXISTS
+
+    const emailQuery = `
+    SELECT email
+      FROM users
+      WHERE id = ANY($1::integer[])`;
+
+    const emailRes = await db.query(emailQuery, [reply.taggedIds]);
+
+    if (emailRes.rows.length)
+      reply.taggedUsers = emailRes.rows.map((row) => row.email);
+
+    return reply;
+  }
+
+  static async checkCurrentUserJobs(jobs, jobId) {
+    if (!jobs.includes(jobId))
+      throw new UnauthorizedError("You are not associated with this project");
+    return;
   }
 }
 
