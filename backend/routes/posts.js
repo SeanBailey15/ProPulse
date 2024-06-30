@@ -12,6 +12,7 @@ const postNewSchema = require("../schemas/postNew.json");
 const replyNewSchema = require("../schemas/replyNew.json");
 const { BASE_URL } = require("../config");
 const { sendPushNotification } = require("../helpers/pushNotification");
+const { ensureLoggedIn } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -22,9 +23,11 @@ const router = express.Router();
  * Sends notification to any tagged users
  *
  * Returns post data
+ *
+ * Authorization: Must be logged in
  **/
 
-router.post("/", async function (req, res, next) {
+router.post("/:jobId", ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, postNewSchema);
     if (!validator.valid) {
@@ -32,7 +35,11 @@ router.post("/", async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    const post = await Post.createPost(req.body);
+    const creatorId = res.locals.user.id;
+
+    const jobId = req.params.jobId;
+
+    const post = await Post.createPost(req.body, creatorId, jobId);
 
     const subscriptions = await User.getTaggedUserSubs(post.tagged);
 
@@ -59,9 +66,11 @@ router.post("/", async function (req, res, next) {
  * Sends notification to any tagged users
  *
  * Returns reply data
+ *
+ * Authorization: Must be logged in
  **/
 
-router.post("/reply", async function (req, res, next) {
+router.post(":postId/reply", ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, replyNewSchema);
     if (!validator.valid) {
@@ -69,7 +78,11 @@ router.post("/reply", async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    const reply = await Post.createReply(req.body);
+    const creatorId = res.locals.user.id;
+
+    const postId = req.params.postId;
+
+    const reply = await Post.createReply(req.body, creatorId, postId);
 
     const subscriptions = await User.getTaggedUserSubs(reply.tagged);
 
@@ -77,13 +90,23 @@ router.post("/reply", async function (req, res, next) {
       const notificationPayload = {
         title: `${res.locals.user.email} tagged you in a post!`,
         body: `Click the link to view the message.`,
-        url: `${BASE_URL}/posts/replies/${reply.id}`,
+        url: `${BASE_URL}/posts/${reply.replyTo}/replies/${reply.id}`,
       };
 
       await sendPushNotification(subscriptions, notificationPayload);
     }
 
     return res.status(201).json({ reply });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/:jobId/:id", async function (req, res, next) {
+  try {
+    const post = await Post.getPost(req.params.id);
+
+    return res.json({ post });
   } catch (err) {
     return next(err);
   }

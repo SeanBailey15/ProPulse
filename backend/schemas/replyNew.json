@@ -5,25 +5,6 @@
   "description": "A post in the database",
   "type": "object",
   "properties": {
-    "postedBy": {
-      "type": "integer"
-    },
-    "replyTo": {
-      "type": "integer"
-    },
-    "deadline": {
-      "type": "string"
-    },
-    "progress": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 30
-    },
-    "urgency": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 30
-    },
     "content": {
       "type": "string",
       "minLength": 1

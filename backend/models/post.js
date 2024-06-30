@@ -2,11 +2,8 @@
 
 const db = require("../db");
 
-const {
-  NotFoundError,
-  BadRequestError,
-  UnauthorizedError,
-} = require("../expressError");
+const { NotFoundError, BadRequestError } = require("../expressError");
+const User = require("./user");
 
 /** Related functions for posts. */
 
@@ -15,20 +12,14 @@ class Post {
    * Create post with data.
    *
    * Inserts data into posts table
-   *  Returns {id, datePosted, postedBy, jobId, deadline, progress, urgency, content, tagged, isReply }
+   *  Returns {id, datePosted, postedBy, jobId, content, tagged, isReply }
    *
    * Inserts association data into post_tagged_users table after post creation
    **/
 
-  static async createPost({
-    postedBy,
-    jobId,
-    deadline,
-    progress,
-    urgency,
-    content,
-    tagged = [],
-  }) {
+  static async createPost(data, creatorId, jobId) {
+    const { content, tagged = [] } = data;
+
     // CONVERT EMAIL TAGS INTO USER IDS
     const tagIdQuery = `
         SELECT id
@@ -44,23 +35,17 @@ class Post {
       `INSERT INTO posts
                     (posted_by,
                      job_id,
-                     deadline,
-                     progress,
-                     urgency,
                      content,
                      tagged)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    VALUES ($1, $2, $3, $4)
                     RETURNING id,
                               date_posted AS "datePosted",
                               posted_by AS "postedBy",
                               job_id AS "jobId",
-                              deadline,
-                              progress,
-                              urgency,
                               content,
                               tagged,
                               is_reply AS "isReply"`,
-      [postedBy, jobId, deadline, progress, urgency, content, taggedIds]
+      [creatorId, jobId, content, taggedIds]
     );
 
     const post = result.rows[0];
@@ -86,18 +71,14 @@ class Post {
    * Create post reply with data.
    *
    * Inserts data into replies table
-   *  Returns {id, datePosted, postedBy, replyTo, deadline, content, tagged, isReply }
+   *  Returns {id, datePosted, postedBy, replyTo, content, tagged, isReply }
    *
    * Inserts association data into reply_tagged_users table after reply creation
    **/
 
-  static async createReply({
-    postedBy,
-    replyTo,
-    deadline,
-    content,
-    tagged = [],
-  }) {
+  static async createReply(data, creatorId, postId) {
+    const { content, tagged = [] } = data;
+
     // CONVERT EMAIL TAGS INTO USER IDS
     const tagIdQuery = `
         SELECT id
@@ -111,19 +92,17 @@ class Post {
       `INSERT INTO replies
         (posted_by,
          reply_to,
-         deadline,
          content,
          tagged)
-        VALUES ($1, $2, $3, $4, $5)
+        VALUES ($1, $2, $3, $4)
         RETURNING id,
                   date_posted AS "datePosted",
                   posted_by AS "postedBy",
                   reply_to AS "replyTo",
-                  deadline,
                   content,
                   tagged,
                   is_reply AS "isReply"`,
-      [postedBy, replyTo, deadline, content, taggedIds]
+      [creatorId, postId, content, taggedIds]
     );
 
     const reply = result.rows[0];
@@ -143,6 +122,46 @@ class Post {
     });
 
     return reply;
+  }
+
+  /** Given a post id, get post information
+   *
+   * Returns { id, datePosted, postedBy, jobId, jobName, content}
+   */
+
+  static async getPost(postId) {
+    const result = await db.query(
+      `SELECT posts.id,
+              posts.date_posted AS "datePosted",
+              users.id AS "creatorId",
+              users.email AS "createdBy",
+              posts.job_id AS "jobId",
+              jobs.name AS "jobName",
+              posts.content,
+              posts.tagged AS "taggedIds",
+              posts.is_reply AS "isReply"
+            FROM posts
+            JOIN users
+            ON posts.posted_by = users.id
+            JOIN jobs
+            ON posts.job_id = jobs.id
+            WHERE posts.id = $1`,
+      [postId]
+    );
+    const post = result.rows[0];
+
+    if (!post) throw new NotFoundError(`No post with the id: ${postId}`);
+
+    const emailQuery = `
+    SELECT email
+      FROM users
+      WHERE id = ANY($1::integer[])`;
+
+    const emailRes = await db.query(emailQuery, [post.taggedIds]);
+
+    post.taggedUsers = emailRes.rows.map((row) => row.email);
+
+    return post;
   }
 }
 
