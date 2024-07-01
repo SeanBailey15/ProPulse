@@ -4,10 +4,9 @@ const db = require("../db");
 
 const {
   NotFoundError,
-  BadRequestError,
   UnauthorizedError,
+  BadRequestError,
 } = require("../expressError");
-const User = require("./user");
 
 /** Related functions for posts. */
 
@@ -18,7 +17,7 @@ class Post {
    * Inserts data into posts table
    *  Returns {id, datePosted, postedBy, jobId, content, tagged, isReply }
    *
-   * Inserts association data into post_tagged_users table after post creation
+   * Throws BadRequestError if a tagged user is not associated with the job being posted to
    **/
 
   static async createPost(data, creatorId, jobId) {
@@ -33,6 +32,29 @@ class Post {
     const tagIdRes = await db.query(tagIdQuery, [tagged]);
 
     const taggedIds = tagIdRes.rows.map((row) => row.id);
+
+    // GET EACH TAGGED USERS JOB ASSOCIATIONS AND CHECK THEY ARE ASSOCIATED WITH THIS JOB
+
+    const taggedUserJobs = taggedIds.map(async (id) => {
+      const userJobsRes = await db.query(
+        `SELECT jobs.id
+              FROM jobs
+              JOIN job_associations AS ja
+              ON jobs.id = ja.job_id
+              WHERE ja.user_id = $1`,
+        [id]
+      );
+
+      const userJobs = userJobsRes.rows.map((row) => row.id);
+
+      // THROW ERROR IF A TAGGED USER IS NOT ASSOCIATED WITH THIS JOB
+      if (!userJobs.includes(jobId))
+        throw new BadRequestError(
+          "One or more tagged users are not associated with this project"
+        );
+    });
+
+    await Promise.all(taggedUserJobs);
 
     // INSERT ALL DATA INTO POSTS TABLE
     const result = await db.query(
@@ -54,20 +76,6 @@ class Post {
 
     const post = result.rows[0];
 
-    // IF POST CREATION FAILS, THROW ERROR
-    if (!post) throw new BadRequestError(`Invalid Input`);
-
-    // IF POST CREATION SUCCESS, INSERT RELEVANT IDS INTO post_tagged_users ASSOCIATION TABLE
-    // await taggedIds.map((id) => {
-    //   db.query(
-    //     `INSERT into post_tagged_users(
-    //             post_id,
-    //             user_id)
-    //          VALUES( $1, $2)`,
-    //     [post.id, id]
-    //   );
-    // });
-
     return post;
   }
 
@@ -77,7 +85,7 @@ class Post {
    * Inserts data into replies table
    *  Returns {id, datePosted, postedBy, replyTo, content, tagged, isReply }
    *
-   * Inserts association data into reply_tagged_users table after reply creation
+   * Throws BadRequestError if a tagged user is not associated with the job being posted to
    **/
 
   static async createReply(data, creatorId, postId) {
@@ -92,6 +100,39 @@ class Post {
     const tagIdRes = await db.query(tagIdQuery, [tagged]);
 
     const taggedIds = tagIdRes.rows.map((row) => row.id);
+
+    // GET THE JOB ID FOR THE ORIGIN POST
+    const jobIdRes = await db.query(
+      `SELECT job_id
+            FROM posts
+            WHERE id = $1`,
+      [postId]
+    );
+
+    const jobId = jobIdRes.rows[0].job_id;
+
+    // GET EACH TAGGED USERS JOB ASSOCIATIONS AND CHECK THEY ARE ASSOCIATED WITH THIS JOB
+    const taggedUserJobs = taggedIds.map(async (id) => {
+      const userJobsRes = await db.query(
+        `SELECT jobs.id
+                  FROM jobs
+                  JOIN job_associations AS ja
+                  ON jobs.id = ja.job_id
+                  WHERE ja.user_id = $1`,
+        [id]
+      );
+
+      const userJobs = userJobsRes.rows.map((row) => row.id);
+
+      // THROW ERROR IF A TAGGED USER IS NOT ASSOCIATED WITH THIS JOB
+      if (!userJobs.includes(jobId))
+        throw new BadRequestError(
+          "One or more tagged users are not associated with this project"
+        );
+    });
+
+    await Promise.all(taggedUserJobs);
+
     const result = await db.query(
       `INSERT INTO replies
         (posted_by,
@@ -110,20 +151,6 @@ class Post {
     );
 
     const reply = result.rows[0];
-
-    // IF REPLY CREATION FAILS, THROW ERROR
-    if (!reply) throw new BadRequestError(`Invalid Input`);
-
-    // IF REPLY CREATION SUCCESS, INSERT RELEVANT IDS INTO reply_tagged_users ASSOCIATION TABLE
-    // await taggedIds.map((id) => {
-    //   db.query(
-    //     `INSERT into reply_tagged_users(
-    //                 reply_id,
-    //                 user_id)
-    //              VALUES( $1, $2)`,
-    //     [reply.id, id]
-    //   );
-    // });
 
     return reply;
   }

@@ -5,15 +5,13 @@ const {
   BadRequestError,
   UnauthorizedError,
 } = require("../expressError");
-const db = require("../db.js");
 const User = require("../models/user.js");
 const {
   commonBeforeAll,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-} = require("./_testModelsCommon");
-const { subscribe } = require("../routes/posts.js");
+} = require("../_testModelsCommon");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -33,7 +31,6 @@ describe("authenticate", function () {
       phone: "1111111111",
       organization: "Org One",
       title: "Test1",
-      profileImg: null,
     });
   });
   test("throws UnauthorizedError", async function () {
@@ -78,7 +75,6 @@ describe("register", function () {
       phone: "5555555555",
       organization: "New Org",
       title: "TestNew",
-      profileImg: null,
     });
   });
   test("throws BadRequestError", async function () {
@@ -104,7 +100,6 @@ describe("get", function () {
       phone: "1111111111",
       organization: "Org One",
       title: "Test1",
-      profileImg: null,
       active: true,
       subscriptions: null,
       jobs: [
@@ -131,7 +126,7 @@ describe("get", function () {
   });
   test("throws NotFoundError", async function () {
     try {
-      let res = await User.get(99);
+      await User.get(99);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -152,7 +147,6 @@ describe("getByEmail", function () {
       phone: "2222222222",
       organization: "Org Two",
       title: "Test2",
-      profileImg: null,
       active: true,
       subscriptions: null,
     });
@@ -181,7 +175,6 @@ describe("getAll", function () {
         phone: "1111111111",
         organization: "Org One",
         title: "Test1",
-        profileImg: null,
         active: true,
         subscriptions: null,
       },
@@ -193,7 +186,6 @@ describe("getAll", function () {
         phone: "2222222222",
         organization: "Org Two",
         title: "Test2",
-        profileImg: null,
         active: true,
         subscriptions: null,
       },
@@ -205,7 +197,6 @@ describe("getAll", function () {
         phone: "3333333333",
         organization: "Org Three",
         title: "Test3",
-        profileImg: null,
         active: true,
         subscriptions: null,
       },
@@ -217,7 +208,6 @@ describe("getAll", function () {
         phone: "4444444444",
         organization: "Org Four",
         title: "Test4",
-        profileImg: null,
         active: true,
         subscriptions: null,
       },
@@ -242,7 +232,6 @@ describe("update", function () {
       phone: "1111111111",
       organization: "Org One",
       title: "Number One Dev",
-      profileImg: null,
       active: true,
       subscriptions: null,
     });
@@ -310,5 +299,50 @@ describe("addSubscription", function () {
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
     }
+  });
+});
+
+/************************************** getTaggedUserSubs */
+
+describe("getTaggedUserSubs", function () {
+  let sub1 = {
+    endpoint: "An http endpoint for push notifications",
+    userAuth: "user auth key",
+    userPublicKey: "another key",
+  };
+  let sub2 = {
+    endpoint: "Another http endpoint for push notifications",
+    userAuth: "user auth key",
+    userPublicKey: "another key",
+  };
+  let sub3 = {
+    endpoint: "A third http endpoint for push notifications",
+    userAuth: "user auth key",
+    userPublicKey: "another key",
+  };
+
+  test("gets an array of subscriptions", async function () {
+    await User.addSubscription(sub1, 1);
+    await User.addSubscription(sub2, 1);
+    await User.addSubscription(sub3, 1);
+
+    let res = await User.getTaggedUserSubs([1]);
+    expect(res).toEqual([
+      {
+        endpoint: "An http endpoint for push notifications",
+        userAuth: "user auth key",
+        userPublicKey: "another key",
+      },
+      {
+        endpoint: "Another http endpoint for push notifications",
+        userAuth: "user auth key",
+        userPublicKey: "another key",
+      },
+      {
+        endpoint: "A third http endpoint for push notifications",
+        userAuth: "user auth key",
+        userPublicKey: "another key",
+      },
+    ]);
   });
 });

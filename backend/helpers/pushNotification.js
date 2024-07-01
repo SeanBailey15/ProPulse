@@ -3,7 +3,7 @@ const { BadRequestError } = require("../expressError");
 
 /** Sends push notifications to a list of subscriptions.
  *
- * Takes an array of subscription objects and the payload to send in the push notification.
+ * Takes an array of subscription objects and the payload to send with the push notification.
  *
  * Throws BadRequestError if the user is not subscribed.
  */

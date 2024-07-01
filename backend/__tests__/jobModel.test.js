@@ -1,14 +1,13 @@
 "use strict";
 
 const { NotFoundError, BadRequestError } = require("../expressError");
-const db = require("../db.js");
 const Job = require("../models/job.js");
 const {
   commonBeforeAll,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-} = require("./_testModelsCommon");
+} = require("../_testModelsCommon.js");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -175,6 +174,14 @@ describe("getJob", function () {
           title: "Test2",
         },
       ],
+      posts: [
+        {
+          id: 1,
+          datePosted: expect.any(Date),
+          postedBy: "user1@email.com",
+          content: "Welcome to the team",
+        },
+      ],
     });
   });
   test("gets job1 as user2 (no job privilege)", async function () {
@@ -194,6 +201,14 @@ describe("getJob", function () {
           email: "user2@email.com",
           organization: "Org Two",
           title: "Test2",
+        },
+      ],
+      posts: [
+        {
+          id: 1,
+          datePosted: expect.any(Date),
+          postedBy: "user1@email.com",
+          content: "Welcome to the team",
         },
       ],
     });
@@ -221,6 +236,20 @@ describe("getJob", function () {
           email: "user3@email.com",
           organization: "Org Three",
           title: "Test3",
+        },
+      ],
+      posts: [
+        {
+          id: 4,
+          datePosted: expect.any(Date),
+          postedBy: "user1@email.com",
+          content: "Ready to rumble?",
+        },
+        {
+          id: 5,
+          datePosted: expect.any(Date),
+          postedBy: "user1@email.com",
+          content: "Cookout Friday!!!",
         },
       ],
     });
@@ -286,7 +315,7 @@ describe("givePrivilege", function () {
   test("grant privilege for job1 to user2", async function () {
     let res = await Job.givePrivilege(1, 2);
     expect(res).toEqual({
-      message: "You have been added the user to the project as a trusted user!",
+      message: "You have added the user to the project as a trusted user!",
       detail: "As a trusted user, they may invite other users to the project!",
     });
   });

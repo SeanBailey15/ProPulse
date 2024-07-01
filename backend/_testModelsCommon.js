@@ -1,11 +1,11 @@
 const bcrypt = require("bcrypt");
 
-const db = require("../db");
-const { BCRYPT_WORK_FACTOR } = require("../config");
+const db = require("./db");
+const { BCRYPT_WORK_FACTOR } = require("./config");
 
 async function commonBeforeAll() {
   await db.query(
-    "TRUNCATE job_privileges, job_associations, post_tagged_users, reply_tagged_users, replies, posts, jobs, users RESTART IDENTITY CASCADE"
+    "TRUNCATE job_privileges, job_associations, replies, posts, jobs, users RESTART IDENTITY CASCADE"
   );
 
   await db.query(
@@ -51,6 +51,25 @@ async function commonBeforeAll() {
                    (4,1),
                    (4,2),
                    (4,3)`
+  );
+
+  await db.query(
+    `INSERT INTO posts (posted_by, job_id, content, tagged)
+            VALUES (1, 1, 'Welcome to the team', ARRAY [2]),
+                   (2, 2, 'Hello World', ARRAY [3]),
+                   (3, 3, 'Hi user2!', ARRAY [2]),
+                   (1, 4, 'Ready to rumble?', ARRAY [2, 3])`
+  );
+
+  await db.query(
+    `INSERT INTO posts (posted_by, job_id, content)
+            VALUES (1, 4, 'Cookout Friday!!!')`
+  );
+
+  await db.query(
+    `INSERT INTO replies (posted_by, reply_to, content, tagged)
+            VALUES (2, 4, 'I am READY!!', ARRAY [1, 3]),
+                   (3, 4, 'Me too! Lets GOOOOO!', ARRAY [1, 2])`
   );
 }
 

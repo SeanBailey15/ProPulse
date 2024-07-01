@@ -1,12 +1,12 @@
 "use strict";
 /** Database setup for jobly. */
-const { Client } = require("pg");
+const { Pool } = require("pg");
 const { PGPASSWORD, getDatabaseUri } = require("./config");
 
 let db;
 
 if (process.env.NODE_ENV === "production") {
-  db = new Client({
+  db = new Pool({
     connectionString: getDatabaseUri(),
     password: PGPASSWORD,
     ssl: {
@@ -14,12 +14,10 @@ if (process.env.NODE_ENV === "production") {
     },
   });
 } else {
-  db = new Client({
+  db = new Pool({
     connectionString: getDatabaseUri(),
     password: PGPASSWORD,
   });
 }
-
-db.connect();
 
 module.exports = db;

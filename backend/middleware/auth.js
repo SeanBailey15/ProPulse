@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
 const Job = require("../models/job");
+const User = require("../models/user");
 
 /** Middleware: Block access to route
  *

@@ -2,14 +2,8 @@
 
 /** Routes for push notifications. */
 
-const jsonschema = require("jsonschema");
-
 const express = require("express");
-const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
-const Job = require("../models/job");
-
-const push = require("../config");
 
 const router = express.Router();
 
