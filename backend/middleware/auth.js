@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
 const Job = require("../models/job");
-const User = require("../models/user");
 
 /** Middleware: Block access to route
  *
@@ -68,9 +67,13 @@ function ensureLoggedIn(req, res, next) {
  */
 
 function ensureJobMatch(req, res, next) {
-  if (!res.locals.user.jobs.includes(+req.params.id))
-    throw new UnauthorizedError();
-  return next();
+  try {
+    if (!res.locals.user.jobs.includes(+req.params.id))
+      throw new UnauthorizedError();
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 }
 
 /** Middleware to use when requested user must be current user.
@@ -81,8 +84,12 @@ function ensureJobMatch(req, res, next) {
  */
 
 function ensureSelf(req, res, next) {
-  if (res.locals.user.id !== +req.params.id) throw new UnauthorizedError();
-  return next();
+  try {
+    if (res.locals.user.id !== +req.params.id) throw new UnauthorizedError();
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 }
 
 /** Middleware to use when current user must have job privileges
@@ -93,23 +100,31 @@ function ensureSelf(req, res, next) {
  */
 
 async function ensurePrivileges(req, res, next) {
-  const jobId = req.params.id;
-  const userId = res.locals.user.id;
-  const check = await Job.isTrusted(jobId, userId);
+  try {
+    const jobId = req.params.id;
+    const userId = res.locals.user.id;
+    const check = await Job.isTrusted(jobId, userId);
 
-  if (check === false) throw new UnauthorizedError();
+    if (check === false) throw new UnauthorizedError();
 
-  return next();
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 }
 
 async function ensureAdmin(req, res, next) {
-  const jobId = req.params.id;
-  const userId = res.locals.user.id;
-  const job = await Job.getJob(jobId, userId);
+  try {
+    const jobId = req.params.id;
+    const userId = res.locals.user.id;
+    const job = await Job.getJob(jobId, userId);
 
-  if (job.adminId !== userId) throw new UnauthorizedError();
+    if (job.adminId !== userId) throw new UnauthorizedError();
 
-  return next();
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 }
 
 module.exports = {

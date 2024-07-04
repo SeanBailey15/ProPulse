@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 
-const db = require("./db");
-const { BCRYPT_WORK_FACTOR } = require("./config");
+const db = require("../db");
+const { BCRYPT_WORK_FACTOR } = require("../config");
 
 async function commonBeforeAll() {
   await db.query(
