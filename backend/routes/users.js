@@ -42,6 +42,8 @@ router.get("/", blockRoute, async function (req, res, next) {
  * Returns { id, email, firstName, lastName, phone, organization, title, jobs }
  *   where jobs is { id, name, city, state, streetAddr, adminId, adminEmail }
  *
+ * Throws UnauthorizedError if current user is not associated with ANY jobs
+ *
  * Throws UnauthorizedError if no jobs in common:
  *  current user should not be able to get requested user data in this case.
  *
@@ -53,6 +55,8 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
     const user = await User.get(req.params.id);
 
     if (res.locals.user.id === req.params.id) return res.json({ user });
+
+    if (!res.locals.user.jobs) throw new UnauthorizedError();
 
     let jobRelationships = [];
 
@@ -116,13 +120,18 @@ router.patch(
  * Returns message on success, error on failure
  */
 
-router.patch("/deactivate/:id", ensureSelf, async function (req, res, next) {
-  try {
-    const message = await User.deactivate(req.params.id);
-    return res.json({ message });
-  } catch (err) {
-    return next(err);
+router.patch(
+  "/deactivate/:id",
+  ensureLoggedIn,
+  ensureSelf,
+  async function (req, res, next) {
+    try {
+      const message = await User.deactivate(req.params.id);
+      return res.json(message);
+    } catch (err) {
+      return next(err);
+    }
   }
-});
+);
 
 module.exports = router;

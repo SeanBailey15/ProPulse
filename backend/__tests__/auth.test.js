@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const request = require("supertest");
 const app = require("../app");
 const { UnauthorizedError } = require("../expressError");
-const User = require("../models/user");
 
 const {
   authenticateJWT,
