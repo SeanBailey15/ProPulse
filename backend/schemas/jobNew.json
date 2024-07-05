@@ -24,9 +24,6 @@
       "type": "string",
       "minLength": 6,
       "maxLength": 50
-    },
-    "adminId": {
-      "type": "integer"
     }
   },
   "additionalProperties": false,

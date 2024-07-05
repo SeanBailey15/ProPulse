@@ -85,7 +85,7 @@ function ensureJobMatch(req, res, next) {
 
 function ensureSelf(req, res, next) {
   try {
-    if (res.locals.user.id !== +req.params.id) throw new UnauthorizedError();
+    if (+res.locals.user.id !== +req.params.id) throw new UnauthorizedError();
     return next();
   } catch (err) {
     return next(err);

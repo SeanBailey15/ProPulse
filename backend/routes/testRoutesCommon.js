@@ -56,6 +56,13 @@ async function commonBeforeAll() {
     title: "Test5",
   });
 
+  const TEST_SUBSCRIPTION =
+    '{"endpoint":"https://someendpoint.com","expirationTime":null,"keys":{"p256dh":"BHRVbq-_JH9ZUJikUVDyj7yi0TVZ9ujgDZp64e_W_LrvYNK5EMPe7JSkAMOK4ei8T09C8fR2-IVEssDiZaFK_Yg","auth":"uf7nWgbhsci7-GNKjXp1xQ"}}';
+
+  const sub = JSON.parse(TEST_SUBSCRIPTION);
+
+  await User.addSubscription(sub, 5);
+
   await Job.createJob(
     {
       name: "Job One",

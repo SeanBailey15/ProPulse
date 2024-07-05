@@ -54,7 +54,7 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     const user = await User.get(req.params.id);
 
-    if (res.locals.user.id === req.params.id) return res.json({ user });
+    if (+res.locals.user.id === +req.params.id) return res.json({ user });
 
     if (!res.locals.user.jobs) throw new UnauthorizedError();
 

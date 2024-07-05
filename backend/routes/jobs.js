@@ -100,6 +100,11 @@ router.post(
 
       const recipient = await User.getByEmail(invited);
 
+      if (!recipient.subscriptions)
+        throw new BadRequestError(
+          "This user is not subscribed to notifications"
+        );
+
       const tokenPayload = {
         invited: recipient.id,
         privilege: privilege,
@@ -111,7 +116,7 @@ router.post(
       const notificationPayload = {
         title: `${recipient.firstName}, you have an invitation!`,
         body: `${sender} has invited you to a project. Click to accept.`,
-        url: `${BASE_URL}/jobs/accept?token=${token}`,
+        url: `${BASE_URL}/jobs/invitation?token=${token}`,
       };
 
       await sendPushNotification(recipient.subscriptions, notificationPayload);
@@ -123,9 +128,29 @@ router.post(
   }
 );
 
+// *************************************************************************************
+
+/** GET /invitation?token => token
+ *
+ * Will function as a landing page for a user that clicks on an invitation notification
+ *
+ * Returns a token containing data necessary for job associations
+ *
+ * Authorization: Must be logged in
+ */
+
+router.get("/invitation", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const { token } = req.query;
+    return res.json(token);
+  } catch (err) {
+    return next(err);
+  }
+});
+
 // ************************************************************************************
 
-/** POST /accept/:id => { message }
+/** POST /accept?token => { message }
  *
  * Associates a user to a job after invite accepted
  *
@@ -138,14 +163,14 @@ router.post(
 
 router.post("/accept", ensureLoggedIn, async function (req, res, next) {
   try {
-    const { token } = req.body;
+    const { token } = req.query;
     const decoded = jwt.verify(token, SECRET_KEY);
 
     const { invited, privilege, jobId } = decoded;
 
     const message = await Job.associate(jobId, invited, privilege);
 
-    return res.json({ message });
+    return res.json(message);
   } catch (err) {
     return next(err);
   }
@@ -225,7 +250,7 @@ router.post(
       const userId = req.params.userId;
 
       const message = await Job.dissociate(jobId, userId);
-      return res.json({ message });
+      return res.json(message);
     } catch (err) {
       return next(err);
     }

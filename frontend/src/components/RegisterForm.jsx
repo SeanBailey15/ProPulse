@@ -2,17 +2,17 @@
 
 import React, { useState } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const { VITE_VAPID_PUBLIC_KEY } = import.meta.env;
 
 // Web-Push
-// Public base64 to Uint
 function urlBase64ToUint8Array(base64String) {
-  let padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  let base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
-  let rawData = window.atob(base64);
-  let outputArray = new Uint8Array(rawData.length);
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
 
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
@@ -21,94 +21,120 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 const RegisterForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [organization, setOrganization] = useState("");
-  const [title, setTitle] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    organization: "",
+    title: "",
+  });
   const [agreeToNotifications, setAgreeToNotifications] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((data) => ({
+      ...data,
+      [name]: value,
+    }));
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    // Register the user
-    const response = await axios.post("http://localhost:3001/auth/register", {
-      email,
-      password,
-      firstName,
-      lastName,
-      phone,
-      organization,
-      title,
-    });
-
-    const userId = response.data.id;
-
-    if (agreeToNotifications && "serviceWorker" in navigator) {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VITE_VAPID_PUBLIC_KEY),
-      });
-
-      console.log(subscription);
-      console.log(userId);
-      await axios.post(
-        `http://localhost:3001/push/subscribe/${userId}`,
-        JSON.stringify(subscription)
+    try {
+      // Register the user
+      const response = await axios.post(
+        "http://localhost:3001/auth/register",
+        formData
       );
+
+      const user = jwtDecode(response.data.token);
+      const userId = user.id;
+
+      if (agreeToNotifications && "serviceWorker" in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VITE_VAPID_PUBLIC_KEY),
+        });
+
+        console.log(subscription);
+        console.log(userId);
+
+        await axios.post(
+          `http://localhost:3001/push/subscribe/${userId}`,
+          subscription,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+    } catch (err) {
+      console.error("Error during registration:", err);
+      setError("Registration failed. Please try again.");
     }
   };
 
   return (
     <form onSubmit={handleRegister}>
+      {error && <div className="error">{error}</div>}
       <input
         type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
         placeholder="Email"
         required
       />
       <input
         type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
         placeholder="Password"
         required
       />
       <input
         type="text"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
+        name="firstName"
+        value={formData.firstName}
+        onChange={handleChange}
         placeholder="First Name"
         required
       />
       <input
         type="text"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
+        name="lastName"
+        value={formData.lastName}
+        onChange={handleChange}
         placeholder="Last Name"
         required
       />
       <input
         type="tel"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
+        name="phone"
+        value={formData.phone}
+        onChange={handleChange}
         placeholder="Phone"
         required
       />
       <input
         type="text"
-        value={organization}
-        onChange={(e) => setOrganization(e.target.value)}
+        name="organization"
+        value={formData.organization}
+        onChange={handleChange}
         placeholder="Organization"
         required
       />
       <input
         type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        name="title"
+        value={formData.title}
+        onChange={handleChange}
         placeholder="Title"
         required
       />
