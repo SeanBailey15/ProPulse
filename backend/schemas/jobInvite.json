@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://propulse.com/inviteJob.schema.json",
+  "$id": "https://propulse.com/jobInvite.schema.json",
   "title": "Invite to Job",
   "description": "For use with user job invite inputs",
   "type": "object",

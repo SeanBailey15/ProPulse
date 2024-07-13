@@ -5,13 +5,18 @@ const app = require("../app");
 const { SECRET_KEY } = require("../config");
 const jwt = require("jsonwebtoken");
 
+const { sendPushNotification } = require("../helpers/pushNotification");
+jest.mock("../helpers/pushNotification", () => ({
+  sendPushNotification: jest.fn(),
+}));
+
 const {
   commonBeforeAll,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
 } = require("../routes/testRoutesCommon");
-const Job = require("../models/job");
+const { WebPushError } = require("web-push");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -119,13 +124,20 @@ describe("POST /jobs/invite/:id", function () {
   test("works for logged in with job privileges", async function () {
     const u1token = await u1();
 
+    sendPushNotification.mockResolvedValue({
+      statusCode: 201,
+      body: JSON.stringify({ success: true }),
+    });
+
     const resp = await request(app)
       .post("/jobs/invite/1")
       .send({ invited: "user5@email.com", privilege: "No" })
       .set("authorization", `Bearer ${u1token}`);
+    expect(resp.statusCode).toEqual(200);
     expect(resp.body).toEqual({
       message: "Invitation sent successfully",
     });
+    expect(sendPushNotification).toHaveBeenCalled();
   });
 
   test("unauth for logged in without privileges", async function () {

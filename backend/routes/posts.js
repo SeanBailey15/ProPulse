@@ -12,7 +12,7 @@ const postNewSchema = require("../schemas/postNew.json");
 const replyNewSchema = require("../schemas/replyNew.json");
 const { BASE_URL } = require("../config");
 const { sendPushNotification } = require("../helpers/pushNotification");
-const { ensureLoggedIn } = require("../middleware/auth");
+const { ensureLoggedIn, ensureJobMatch } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -27,37 +27,42 @@ const router = express.Router();
  * Authorization: Must be logged in
  **/
 
-router.post("/:jobId", ensureLoggedIn, async function (req, res, next) {
-  try {
-    const validator = jsonschema.validate(req.body, postNewSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map((e) => e.stack);
-      throw new BadRequestError(errs);
+router.post(
+  "/:jobId",
+  ensureLoggedIn,
+  ensureJobMatch,
+  async function (req, res, next) {
+    try {
+      const validator = jsonschema.validate(req.body, postNewSchema);
+      if (!validator.valid) {
+        const errs = validator.errors.map((e) => e.stack);
+        throw new BadRequestError(errs);
+      }
+
+      const creatorId = res.locals.user.id;
+
+      const jobId = +req.params.jobId;
+
+      const post = await Post.createPost(req.body, creatorId, jobId);
+
+      const subscriptions = await User.getTaggedUserSubs(post.tagged);
+
+      if (subscriptions.length) {
+        const notificationPayload = {
+          title: `${res.locals.user.email} tagged you in a post!`,
+          body: `Click the link to view the message.`,
+          url: `${BASE_URL}/posts/${post.id}`,
+        };
+
+        await sendPushNotification(subscriptions, notificationPayload);
+      }
+
+      return res.status(201).json({ post });
+    } catch (err) {
+      return next(err);
     }
-
-    const creatorId = res.locals.user.id;
-
-    const jobId = req.params.jobId;
-
-    const post = await Post.createPost(req.body, creatorId, jobId);
-
-    const subscriptions = await User.getTaggedUserSubs(post.tagged);
-
-    if (subscriptions.length) {
-      const notificationPayload = {
-        title: `${res.locals.user.email} tagged you in a post!`,
-        body: `Click the link to view the message.`,
-        url: `${BASE_URL}/posts/${post.id}`,
-      };
-
-      await sendPushNotification(subscriptions, notificationPayload);
-    }
-
-    return res.status(201).json({ post });
-  } catch (err) {
-    return next(err);
   }
-});
+);
 
 /** POST / {reply} => {reply}
  *
@@ -78,9 +83,15 @@ router.post("/reply/:postId", ensureLoggedIn, async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    const creatorId = res.locals.user.id;
-
     const postId = req.params.postId;
+
+    const post = await Post.getPost(postId);
+
+    if (!res.locals.user.jobs)
+      throw new UnauthorizedError("You are not associated with this project");
+    await Post.checkCurrentUserJobs(res.locals.user.jobs, post.jobId);
+
+    const creatorId = res.locals.user.id;
 
     const reply = await Post.createReply(req.body, creatorId, postId);
 

@@ -2,8 +2,8 @@
 
 const jwt = require("jsonwebtoken");
 const request = require("supertest");
-const app = require("../app");
-const { UnauthorizedError } = require("../expressError");
+const app = require("../app.js");
+const { UnauthorizedError } = require("../expressError.js");
 
 const {
   authenticateJWT,
@@ -12,7 +12,7 @@ const {
   ensureSelf,
   ensurePrivileges,
   ensureAdmin,
-} = require("../middleware/auth");
+} = require("../middleware/auth.js");
 
 const {
   commonBeforeAll,

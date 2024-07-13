@@ -68,7 +68,10 @@ function ensureLoggedIn(req, res, next) {
 
 function ensureJobMatch(req, res, next) {
   try {
-    if (!res.locals.user.jobs.includes(+req.params.id))
+    if (
+      !res.locals.user.jobs.includes(+req.params.id) &&
+      !res.locals.user.jobs.includes(+req.params.jobId)
+    )
       throw new UnauthorizedError();
     return next();
   } catch (err) {

@@ -8,12 +8,6 @@
     "dev": "nodemon server.js",
     "test": "jest -i --verbose --detectOpenHandles"
   },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "config.js"
-    ]
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",

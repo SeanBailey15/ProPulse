@@ -217,22 +217,24 @@ class Post {
 
     // GET EMAILS FOR USERS TAGGED IN REPLIES AND CREATE AN ARRAY WITH DATA IF IT EXISTS
 
-    const replyEmailQuery = `
+    if (post.replies) {
+      const replyEmailQuery = `
     SELECT email
       FROM users
       WHERE id = ANY($1::integer[])`;
 
-    const replyEmailPromises = post.replies.map(async (reply) => {
-      if (reply.taggedIds.length) {
-        const replyEmailRes = await db.query(replyEmailQuery, [
-          reply.taggedIds,
-        ]);
-        reply.taggedUsers = replyEmailRes.rows.map((row) => row.email);
-        return reply;
-      }
-    });
+      const replyEmailPromises = post.replies.map(async (reply) => {
+        if (reply.taggedIds.length) {
+          const replyEmailRes = await db.query(replyEmailQuery, [
+            reply.taggedIds,
+          ]);
+          reply.taggedUsers = replyEmailRes.rows.map((row) => row.email);
+          return reply;
+        }
+      });
 
-    await Promise.all(replyEmailPromises);
+      await Promise.all(replyEmailPromises);
+    }
 
     return post;
   }

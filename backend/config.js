@@ -14,6 +14,10 @@ const MAIL_TO_ID = process.env.MAIL_TO_ID;
 
 push.setVapidDetails(MAIL_TO_ID, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
+// Jest configuration
+
+const JEST_CONFIG_ROOT_PATH = process.env.JEST_CONFIG_ROOT_PATH;
+
 // Other configuration
 const BASE_URL = process.env.BASE_URL || "localhost:3001";
 
@@ -49,6 +53,7 @@ module.exports = {
   PORT,
   PGPASSWORD,
   BCRYPT_WORK_FACTOR,
+  JEST_CONFIG_ROOT_PATH,
   getDatabaseUri,
   push,
 };
