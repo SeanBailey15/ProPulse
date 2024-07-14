@@ -65,7 +65,7 @@ describe("authenticateJWT", function () {
       expect(err).toBeFalsy();
     };
     authenticateJWT(req, res, next);
-    console.log(res.locals);
+
     expect(res.locals).toEqual({
       user: {
         iat: expect.any(Number),

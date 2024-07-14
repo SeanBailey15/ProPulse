@@ -1,3 +1,4 @@
+const { BadRequestError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
 describe("sqlForPartialUpdate", function () {
@@ -18,5 +19,18 @@ describe("sqlForPartialUpdate", function () {
       setCols: '"f1"=$1, "f2"=$2',
       values: ["v1", "v2"],
     });
+  });
+
+  test("badrequest for no data", function () {
+    try {
+      const data = {};
+      const jsToSql = {
+        firstName: "first_name",
+      };
+      sqlForPartialUpdate(data, jsToSql);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
   });
 });

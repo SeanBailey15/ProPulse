@@ -1,28 +1,11 @@
 "use strict";
 
-/** Convenience middleware to handle common auth cases in routes. */
+/** Middleware to handle common auth cases in routes. */
 
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
 const Job = require("../models/job");
-
-/** Middleware: Block access to route
- *
- * Simply throws unauthorized error to block route
- *
- * Made to protect certain routes that are not apparently useful yet
- *
- * Throws Unauthorized Error
- */
-
-function blockRoute(req, res, next) {
-  try {
-    throw new UnauthorizedError();
-  } catch (err) {
-    return next(err);
-  }
-}
 
 /** Middleware: Authenticate user.
  *
@@ -137,5 +120,4 @@ module.exports = {
   ensureSelf,
   ensurePrivileges,
   ensureAdmin,
-  blockRoute,
 };
