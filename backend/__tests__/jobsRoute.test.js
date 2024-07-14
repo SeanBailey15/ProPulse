@@ -16,7 +16,6 @@ const {
   commonAfterEach,
   commonAfterAll,
 } = require("../routes/testRoutesCommon");
-const { WebPushError } = require("web-push");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -57,12 +56,6 @@ const u5 = async function () {
     .send({ email: "user5@email.com", password: "password5" });
   return resp.body.token;
 };
-
-// const u1token = await u1();
-// const u2token = await u2();
-// const u3token = await u3();
-// const u4token = await u4();
-// const u5token = await u5();
 
 /************************************** POST /jobs */
 

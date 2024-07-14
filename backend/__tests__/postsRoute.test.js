@@ -53,12 +53,6 @@ const u5 = async function () {
   return resp.body.token;
 };
 
-// const u1token = await u1();
-// const u2token = await u2();
-// const u3token = await u3();
-// const u4token = await u4();
-// const u5token = await u5();
-
 /************************************** POST /posts/:jobId */
 
 describe("POST /posts/:jobId", function () {

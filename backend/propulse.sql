@@ -6,7 +6,6 @@ CREATE DATABASE propulse;
 \connect propulse
 
 \i propulse-schema.sql
--- \i propulse-seed.sql
 
 \echo 'Delete and recreate propulse_test db?'
 \prompt 'Return for yes or control-C to cancel > ' foo
