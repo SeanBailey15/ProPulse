@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="300"
+   height="50"
+   viewBox="0 0 300 50"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   sodipodi:docname="ProPulse-brand.svg"
+   inkscape:export-filename="ProPulse-navBrand.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="4.1776837"
+     inkscape:cx="151.39969"
+     inkscape:cy="79.469875"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="3832"
+     inkscape:window-y="1072"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <rect
+       x="0"
+       y="0"
+       width="160"
+       height="160"
+       id="rect236" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       id="text234"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:68px;font-family:'Zurich XBlk BT';-inkscape-font-specification:'Zurich XBlk BT';text-align:center;white-space:pre;shape-inside:url(#rect236);shape-padding:0;display:inline;fill:#006496;fill-opacity:1;stroke:#ffffff;stroke-width:2.10803;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       transform="matrix(0.73817482,0,0,0.68591198,-3.8401985,-6.5611115)"><tspan
+         x="1.4580078"
+         y="60.164062"
+         id="tspan1063">PRO</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:46.3601px;font-family:'Zurich XBlk BT';-inkscape-font-specification:'Zurich XBlk BT';text-align:center;text-anchor:middle;fill:#006496;fill-opacity:1;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       x="218.50125"
+       y="34.586319"
+       id="text846"
+       transform="scale(1.0015108,0.99849148)"><tspan
+         sodipodi:role="line"
+         id="tspan844"
+         x="218.50125"
+         y="34.586319"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Zurich XBlk BT';-inkscape-font-specification:'Zurich XBlk BT';fill:#006496;fill-opacity:1;stroke:#ffffff;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1">PULSE</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2"
+     transform="matrix(1.0030164,0,0,0.65298686,42.126662,-47.458862)"
+     sodipodi:insensitive="true">
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:2.22113;stroke-linecap:square;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 4.6908496,133.02215 H 26.789251 l 8.035784,-7.25826 9.040254,12.81778 5.357188,-6.43585 H 62.50178 l 5.868267,7.0344 c 6.53019,-10.30082 10.627788,-21.41483 15.44831,-32.25692 l 10.546987,40.7698 4.302645,-14.98437 15.849391,0.0119 6.35749,-10.97191 9.05277,17.06785 4.34019,-10.37706 5.54126,3.70635 h 23.13676"
+       id="path1156"
+       sodipodi:nodetypes="cccccccccccccccc" />
+  </g>
+</svg>

@@ -1,0 +1,21 @@
+.Nav-brand {
+  text-decoration: none;
+  color: lightgray;
+  font-size: xx-large;
+  font-weight: 600;
+}
+
+.Nav-brand:hover {
+  color: white;
+}
+
+.Nav-link {
+  text-decoration: none;
+  margin-left: 1rem;
+  color: lightgray;
+  font-weight: 500;
+}
+
+.Nav-link:hover {
+  color: white;
+}

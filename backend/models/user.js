@@ -192,7 +192,7 @@ class User {
    *  [{ id, email, firstName, lastName, phone, organization, title, profileImg, active, subscriptions }, ...]
    */
 
-  static async getAll() {
+  /*  static async getAll() {
     const userRes = await db.query(
       `SELECT id,
               email,
@@ -209,7 +209,7 @@ class User {
     const users = userRes.rows;
 
     return users;
-  }
+  }*/
 
   /** Get suscriptions for users tagged in a post
    *
