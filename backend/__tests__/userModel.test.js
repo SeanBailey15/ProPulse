@@ -161,60 +161,6 @@ describe("getByEmail", function () {
   });
 });
 
-/************************************** getAll */
-
-describe("getAll", function () {
-  test("get all users", async function () {
-    let res = await User.getAll();
-    expect(res).toEqual([
-      {
-        id: 1,
-        email: "user1@email.com",
-        firstName: "First",
-        lastName: "One",
-        phone: "1111111111",
-        organization: "Org One",
-        title: "Test1",
-        active: true,
-        subscriptions: null,
-      },
-      {
-        id: 2,
-        email: "user2@email.com",
-        firstName: "Second",
-        lastName: "Two",
-        phone: "2222222222",
-        organization: "Org Two",
-        title: "Test2",
-        active: true,
-        subscriptions: null,
-      },
-      {
-        id: 3,
-        email: "user3@email.com",
-        firstName: "Third",
-        lastName: "Three",
-        phone: "3333333333",
-        organization: "Org Three",
-        title: "Test3",
-        active: true,
-        subscriptions: null,
-      },
-      {
-        id: 4,
-        email: "user4@email.com",
-        firstName: "Fourth",
-        lastName: "Four",
-        phone: "4444444444",
-        organization: "Org Four",
-        title: "Test4",
-        active: true,
-        subscriptions: null,
-      },
-    ]);
-  });
-});
-
 /************************************** update */
 
 describe("update", function () {

@@ -1,0 +1,38 @@
+.Form {
+  max-width: 40rem;
+  margin: 1rem auto;
+  padding: 1rem;
+  border: 2px solid rgba(58, 58, 58, 0.664);
+  border-radius: 20px;
+}
+
+.Form-title {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: darkgray;
+  border-radius: 10px;
+}
+
+.Form-input {
+  border: 2px solid rgba(58, 58, 58, 0.664);
+}
+
+.Form-error {
+  color: white;
+  background-color: rgb(160, 0, 0);
+  max-width: fit-content;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  margin-top: 0.25rem;
+  box-shadow: 1px 1px 5px black;
+}
+
+.Form-input-btn {
+  height: 3.6rem;
+}
+
+.Form-btn {
+  width: 100%;
+  margin: 0.5rem 0;
+}

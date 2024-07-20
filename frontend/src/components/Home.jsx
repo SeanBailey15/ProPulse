@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import UserContext from "../contexts/UserContext";
-// import "../styles/Home.css";
+import "../styles/Home.css";
 
 export default function Home() {
   const { currentUser } = useContext(UserContext);

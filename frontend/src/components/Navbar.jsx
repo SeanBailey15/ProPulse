@@ -23,7 +23,7 @@ export default function NavBar(args) {
           />
         </Link>
         <NavbarToggler onClick={toggle} />
-        <Collapse isOpen={isOpen} navbar>
+        <Collapse isOpen={isOpen} className="Navbar-collapse">
           <Nav className="ms-auto" navbar>
             {currentUser && (
               <NavItem>

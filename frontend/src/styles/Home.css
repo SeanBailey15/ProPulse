@@ -1,0 +1,49 @@
+@media (min-width: 768px) {
+  .Home {
+    box-sizing: border-box;
+    max-width: 60%;
+    margin: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem 1rem 2rem 1rem;
+    background-color: lightgray;
+    border: 2px solid black;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 767px) {
+  .Home {
+    box-sizing: border-box;
+    max-width: 95%;
+    margin: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem 1rem 2rem 1rem;
+    background-color: lightgray;
+    border: 2px solid black;
+    border-radius: 10px;
+  }
+}
+
+.Home-title {
+  text-align: center;
+  padding: 1em 0 0 0;
+  margin: 0;
+}
+
+.Home-msg {
+  text-align: center;
+  padding: 1em 0 0 0;
+  margin: 0;
+}
+
+.Home-msg-link {
+  text-decoration: none;
+}
+
+.Home-text {
+  width: 60%;
+  margin: 1.5rem auto;
+  font-weight: 600;
+}

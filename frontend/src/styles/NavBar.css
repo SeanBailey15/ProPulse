@@ -1,8 +1,27 @@
-.Nav-brand {
-  text-decoration: none;
-  color: lightgray;
-  font-size: xx-large;
-  font-weight: 600;
+.Nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.Navbar {
+  width: 100%;
+  position: relative;
+}
+
+.Navbar-collapse {
+  background: #212529;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.Navbar-toggler {
+  margin-left: auto;
+}
+
+.Navbar-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .Nav-brand:hover {
@@ -18,4 +37,43 @@
 
 .Nav-link:hover {
   color: white;
+}
+
+@media (min-width: 768px) {
+  .Navbar-collapse {
+    position: static;
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    background: transparent;
+    padding: 0;
+  }
+
+  .Navbar-nav {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .Nav-link {
+    margin-left: 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .Navbar-collapse {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .Navbar-collapse.show {
+    display: flex;
+  }
+
+  .Nav-link {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
 }

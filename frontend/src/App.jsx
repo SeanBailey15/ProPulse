@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import UserContext from "./contexts/UserContext";
 import useLocalStorage from "./hooks/useLocalStorage";
 import ProPulseApi from "./api";
-// import "./styles/App.css";
+import "./styles/App.css";
 
 import NavBar from "./components/Navbar";
 import RouteList from "./RouteList";
@@ -56,6 +56,23 @@ const App = () => {
   function logout() {
     setCurrentUser(null);
     setToken(null);
+  }
+
+  if (isLoading)
+    return (
+      <div className="App">
+        <Spinner className="App-spinner" color="secondary">
+          Loading...
+        </Spinner>
+      </div>
+    );
+
+  if (error !== null) {
+    return (
+      <div className="App">
+        <h1>An error occurred: {error.message}</h1>
+      </div>
+    );
   }
 
   return (
