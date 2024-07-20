@@ -15,7 +15,7 @@ export default function SignUpForm({ signUp }) {
 
   return (
     <div className="Form">
-      <h1 className="Form-title">Sign up to access Jobly opportunities!</h1>
+      <h1 className="Form-title">Create your ProPulse account!</h1>
       <p>
         Already a registered user? Login <Link to="/login">here</Link>.
       </p>
@@ -23,9 +23,11 @@ export default function SignUpForm({ signUp }) {
         initialValues={{
           firstName: "",
           lastName: "",
-          username: "",
           email: "",
           password: "",
+          phone: "",
+          organization: "",
+          title: "",
         }}
         validate={(values) => {
           const errors = {};
@@ -42,12 +44,6 @@ export default function SignUpForm({ signUp }) {
             errors.lastName = "Last name must be 30 characters or less.";
           }
 
-          if (!values.username) {
-            errors.username = "Required";
-          } else if (values.username.length > 30) {
-            errors.username = "Username must be 30 characters or less.";
-          }
-
           if (!values.email) {
             errors.email = "Required";
           } else if (
@@ -56,8 +52,8 @@ export default function SignUpForm({ signUp }) {
             errors.email = "Invalid email address.";
           } else if (values.email.length < 6) {
             errors.email = "Email must be 6 characters or more.";
-          } else if (values.email.length > 60) {
-            errors.email = "Email must be 60 characters or less.";
+          } else if (values.email.length > 40) {
+            errors.email = "Email must be 40 characters or less.";
           }
 
           if (!values.password) {
@@ -66,6 +62,28 @@ export default function SignUpForm({ signUp }) {
             errors.password = "Password must be 20 characters or less.";
           } else if (values.password.length < 5) {
             errors.password = "Password must be 5 characters or more.";
+          }
+
+          if (!values.phone) {
+            errors.phone = "Required";
+          } else if (values.phone.length > 17) {
+            errors.phone = "Phone number must be 17 characters or less.";
+          } else if (values.phone.length < 10) {
+            errors.phone = "Phone number must be at least 10 characters.";
+          }
+
+          if (!values.organization) {
+            errors.organization = "Required";
+          } else if (values.organization.length > 30) {
+            errors.organization = "Organization must be 30 characters or less.";
+          }
+
+          if (!values.title) {
+            errors.title = "Required";
+          } else if (values.title.length > 30) {
+            errors.title = "Title must be 30 characters or less.";
+          } else if (values.title.length < 5) {
+            errors.title = "Title must be at least 5 characters.";
           }
 
           return errors;
@@ -123,20 +141,59 @@ export default function SignUpForm({ signUp }) {
             <FormGroup floating>
               <Input
                 className="Form-input"
-                id="username"
-                name="username"
-                placeholder="Username"
+                id="phone"
+                name="phone"
+                placeholder="Phone"
                 type="text"
-                autoComplete="username"
-                value={values.username}
+                value={values.phone}
                 onChange={handleChange}
               />
-              <Label className="Form-label" for="username">
-                Username
+              <Label className="Form-label" for="phone">
+                Phone
               </Label>
-              {errors.username && touched.username && (
+              {errors.phone && touched.phone && (
                 <div className="Form-error">
-                  {errors.username && touched.username && errors.username}
+                  {errors.phone && touched.phone && errors.phone}
+                </div>
+              )}
+            </FormGroup>
+            <FormGroup floating>
+              <Input
+                className="Form-input"
+                id="organization"
+                name="organization"
+                placeholder="Organization"
+                type="text"
+                value={values.organization}
+                onChange={handleChange}
+              />
+              <Label className="Form-label" for="organization">
+                Organization
+              </Label>
+              {errors.organization && touched.organization && (
+                <div className="Form-error">
+                  {errors.organization &&
+                    touched.organization &&
+                    errors.organization}
+                </div>
+              )}
+            </FormGroup>
+            <FormGroup floating>
+              <Input
+                className="Form-input"
+                id="title"
+                name="title"
+                placeholder="Job Title"
+                type="text"
+                value={values.title}
+                onChange={handleChange}
+              />
+              <Label className="Form-label" for="title">
+                Job Title
+              </Label>
+              {errors.title && touched.title && (
+                <div className="Form-error">
+                  {errors.title && touched.title && errors.title}
                 </div>
               )}
             </FormGroup>

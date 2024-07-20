@@ -8,43 +8,36 @@ import {
   InputGroup,
   Button,
 } from "reactstrap";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
-import JoblyApi from "../api";
+import ProPulseApi from "../api";
 import "../styles/ProfileForm.css";
 
 export default function ProfileForm() {
-  const { currentUser, setCurrentUser } = useContext(UserContext);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmed, setShowConfirmed] = useState(false);
+  const { currentUser, setCurrentUser, token, setToken } =
+    useContext(UserContext);
 
   const navigate = useNavigate();
 
-  function togglePasswordVisibility() {
-    setShowPassword(!showPassword);
-  }
-  function toggleConfirmedVisibility() {
-    setShowConfirmed(!showConfirmed);
-  }
-
   async function updateProfile(formData) {
-    const username = currentUser.username;
-    const updatedUser = await JoblyApi.updateProfile(username, formData);
-    return updatedUser;
+    const id = currentUser.id;
+    const update = await ProPulseApi.updateProfile(id, formData);
+    return update;
   }
 
   return (
     <div className="Form">
-      <h1 className="Form-title">{`${currentUser.username}'s Profile`}</h1>
+      <h1 className="Form-title">{`${currentUser.email}'s Profile`}</h1>
       <h2 className="Form-msg">Edit Your Information:</h2>
       <Formik
         initialValues={{
           firstName: currentUser.firstName,
           lastName: currentUser.lastName,
           email: currentUser.email,
-          password: "",
-          confirmPassword: "",
+          phone: currentUser.phone,
+          organization: currentUser.organization,
+          title: currentUser.title,
         }}
         validate={(values) => {
           const errors = {};
@@ -69,28 +62,30 @@ export default function ProfileForm() {
             errors.email = "Invalid email address.";
           } else if (values.email.length < 6) {
             errors.email = "Email must be 6 characters or more.";
-          } else if (values.email.length > 60) {
-            errors.email = "Email must be 60 characters or less.";
+          } else if (values.email.length > 40) {
+            errors.email = "Email must be 40 characters or less.";
           }
 
-          if (!values.password) {
-            errors.password = "Required";
-          } else if (values.password.length > 20) {
-            errors.password = "Password must be 20 characters or less.";
-          } else if (values.password.length < 5) {
-            errors.password = "Password must be 5 characters or more.";
-          } else if (values.password !== values.confirmPassword) {
-            errors.confirmPassword = "Passwords do not match";
+          if (!values.phone) {
+            errors.phone = "Required";
+          } else if (values.phone.length > 17) {
+            errors.phone = "Phone number must be 17 characters or less.";
+          } else if (values.phone.length < 10) {
+            errors.phone = "Phone number must be at least 10 characters.";
           }
 
-          if (!values.confirmPassword) {
-            errors.confirmPassword = "Required";
-          } else if (values.confirmPassword.length > 20) {
-            errors.confirmPassword = "Password must be 20 characters or less.";
-          } else if (values.confirmPassword.length < 5) {
-            errors.confirmPassword = "Password must be 5 characters or more.";
-          } else if (values.confirmPassword !== values.password) {
-            errors.confirmPassword = "Passwords do not match";
+          if (!values.organization) {
+            errors.organization = "Required";
+          } else if (values.organization.length > 30) {
+            errors.organization = "Organization must be 30 characters or less.";
+          }
+
+          if (!values.title) {
+            errors.title = "Required";
+          } else if (values.title.length > 30) {
+            errors.title = "Title must be 30 characters or less.";
+          } else if (values.title.length < 5) {
+            errors.title = "Title must be at least 5 characters.";
           }
 
           return errors;
@@ -98,15 +93,17 @@ export default function ProfileForm() {
         onSubmit={async (values) => {
           let data;
           try {
-            if (values.password === values.confirmPassword) {
-              data = {
-                firstName: values.firstName,
-                lastName: values.lastName,
-                email: values.email,
-                password: values.password,
-              };
-            }
-            setCurrentUser(await updateProfile(data));
+            data = {
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
+              phone: values.phone,
+              organization: values.organization,
+              title: values.title,
+            };
+            const res = await updateProfile(data);
+            setCurrentUser(res.user);
+            setToken(res.token);
             navigate("/", { replace: true });
           } catch (err) {
             console.error(err);
@@ -157,6 +154,68 @@ export default function ProfileForm() {
             <FormGroup floating>
               <Input
                 className="Form-input"
+                id="phone"
+                name="phone"
+                placeholder="Phone"
+                type="text"
+                autoComplete="phone"
+                value={values.phone}
+                onChange={handleChange}
+              />
+              <Label className="Form-label" for="phone">
+                Phone
+              </Label>
+              {errors.phone && touched.phone && (
+                <div className="Form-error">
+                  {errors.phone && touched.phone && errors.phone}
+                </div>
+              )}
+            </FormGroup>
+            <FormGroup floating>
+              <Input
+                className="Form-input"
+                id="organization"
+                name="organization"
+                placeholder="Organization"
+                type="text"
+                autoComplete="organization"
+                value={values.organization}
+                onChange={handleChange}
+              />
+              <Label className="Form-label" for="organization">
+                Organization
+              </Label>
+              {errors.organization && touched.organization && (
+                <div className="Form-error">
+                  {errors.organization &&
+                    touched.organization &&
+                    errors.organization}
+                </div>
+              )}
+            </FormGroup>
+            <FormGroup floating>
+              <Input
+                className="Form-input"
+                id="title"
+                name="title"
+                placeholder="Title"
+                type="text"
+                autoComplete="title"
+                value={values.title}
+                onChange={handleChange}
+              />
+              <Label className="Form-label" for="title">
+                Title
+              </Label>
+              {errors.title && touched.title && (
+                <div className="Form-error">
+                  {errors.title && touched.title && errors.title}
+                </div>
+              )}
+            </FormGroup>
+            <FormGroup floating>
+              <Input
+                className="Form-input"
                 id="email"
                 name="email"
                 placeholder="Email"
@@ -174,80 +233,6 @@ export default function ProfileForm() {
                 </div>
               )}
             </FormGroup>
-            <InputGroup>
-              <FormGroup floating>
-                <Input
-                  className="Form-input"
-                  id="password"
-                  name="password"
-                  placeholder="Password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  value={values.password}
-                  onChange={handleChange}
-                />
-                <Label className="Form-label" for="password">
-                  Password*
-                </Label>
-                <FormText>
-                  *Here you can change your password, if you like. Use your
-                  current password otherwise.
-                </FormText>
-                {errors.password && touched.password && (
-                  <div className="Form-error">
-                    {errors.password && touched.password && errors.password}
-                  </div>
-                )}
-              </FormGroup>
-              <Button
-                className="Form-input-btn"
-                onClick={togglePasswordVisibility}
-              >
-                {showPassword ? (
-                  <span className="material-symbols-outlined">
-                    visibility_off
-                  </span>
-                ) : (
-                  <span className="material-symbols-outlined">visibility</span>
-                )}
-              </Button>
-            </InputGroup>
-            <InputGroup>
-              <FormGroup floating>
-                <Input
-                  className="Form-input"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  placeholder="confirmPassword"
-                  type={showConfirmed ? "text" : "password"}
-                  autoComplete="current-password"
-                  value={values.confirmPassword}
-                  onChange={handleChange}
-                />
-                <Label className="Form-label" for="confirmPassword">
-                  Confirm Password
-                </Label>
-                {errors.confirmPassword && touched.confirmPassword && (
-                  <div className="Form-error">
-                    {errors.confirmPassword &&
-                      touched.confirmPassword &&
-                      errors.confirmPassword}
-                  </div>
-                )}
-              </FormGroup>
-              <Button
-                className="Form-input-btn"
-                onClick={toggleConfirmedVisibility}
-              >
-                {showConfirmed ? (
-                  <span className="material-symbols-outlined">
-                    visibility_off
-                  </span>
-                ) : (
-                  <span className="material-symbols-outlined">visibility</span>
-                )}
-              </Button>
-            </InputGroup>
             <Button className="Form-btn" type="submit">
               Submit
             </Button>

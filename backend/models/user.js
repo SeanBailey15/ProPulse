@@ -266,7 +266,8 @@ class User {
     const querySql = `UPDATE users
                       SET ${setCols}
                       WHERE id = ${userIdVarIdx}
-                      RETURNING email,
+                      RETURNING id,
+                                email,
                                 first_name AS "firstName",
                                 last_name AS "lastName",
                                 phone,

@@ -172,6 +172,7 @@ describe("update", function () {
   test("update user info", async function () {
     let res = await User.update(1, data);
     expect(res).toEqual({
+      id: 1,
       email: "userone@email.com",
       firstName: "First",
       lastName: "Uno",

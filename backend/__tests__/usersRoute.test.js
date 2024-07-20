@@ -185,6 +185,7 @@ describe("PATCH /users/:id", function () {
       .set("authorization", `Bearer ${u1token}`);
     expect(resp.body).toEqual({
       user: {
+        id: 1,
         email: "user1@email.com",
         firstName: "First",
         lastName: "Uno",

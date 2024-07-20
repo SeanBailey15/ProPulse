@@ -15,22 +15,28 @@ export default function LoginForm({ login }) {
 
   return (
     <div className="Form">
-      <h1 className="Form-title">Login to access Jobly opportunities!</h1>
+      <h1 className="Form-title">Login to access ProPulse!</h1>
       <p>
         Not a registered user yet? Sign up <Link to="/signup">here</Link>.
       </p>
       <Formik
         initialValues={{
-          username: "",
+          email: "",
           password: "",
         }}
         validate={(values) => {
           const errors = {};
 
-          if (!values.username) {
-            errors.username = "Required";
-          } else if (values.username.length > 30) {
-            errors.username = "Username must be 30 characters or less.";
+          if (!values.email) {
+            errors.email = "Required";
+          } else if (
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+          ) {
+            errors.email = "Invalid email address.";
+          } else if (values.email.length < 6) {
+            errors.email = "Email must be 6 characters or more.";
+          } else if (values.email.length > 40) {
+            errors.email = "Email must be 40 characters or less.";
           }
 
           if (!values.password) {
@@ -58,20 +64,20 @@ export default function LoginForm({ login }) {
             <FormGroup floating>
               <Input
                 className="Form-input"
-                id="username"
-                name="username"
-                placeholder="Username"
+                id="email"
+                name="email"
+                placeholder="Email"
                 type="text"
-                autoComplete="username"
-                value={values.username}
+                autoComplete="email"
+                value={values.email}
                 onChange={handleChange}
               />
-              <Label className="Form-label" for="username">
-                Username
+              <Label className="Form-label" for="email">
+                Email
               </Label>
-              {errors.username && touched.username && (
+              {errors.email && touched.email && (
                 <div className="Form-error">
-                  {errors.username && touched.username && errors.username}
+                  {errors.email && touched.email && errors.email}
                 </div>
               )}
             </FormGroup>

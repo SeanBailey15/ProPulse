@@ -43,6 +43,11 @@ export default class ProPulseApi {
     let res = await this.request(`users/${id}`);
     return res.user;
   }
+
+  static async updateProfile(id, data) {
+    let res = await this.request(`users/${id}`, data, "patch");
+    return res;
+  }
 }
 
 /*for now, put token:

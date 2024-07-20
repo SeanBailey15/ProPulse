@@ -43,6 +43,7 @@
 }
 
 .Home-text {
+  text-align: center;
   width: 60%;
   margin: 1.5rem auto;
   font-weight: 600;
