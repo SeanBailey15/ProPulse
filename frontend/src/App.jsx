@@ -9,7 +9,6 @@ import "./styles/App.css";
 
 import NavBar from "./components/Navbar";
 import RouteList from "./RouteList";
-import RegisterForm from "./components/RegisterForm";
 
 export const TOKEN_STORAGE_ID = "propulse-token";
 
@@ -43,9 +42,25 @@ const App = () => {
     [token]
   );
 
+  function urlBase64ToUint8Array(base64String) {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+
   async function signUp(formData) {
     const token = await ProPulseApi.registerUser(formData);
     setToken(token);
+    return token;
   }
 
   async function login(formData) {
@@ -70,7 +85,8 @@ const App = () => {
   if (error !== null) {
     return (
       <div className="App">
-        <h1>An error occurred: {error.message}</h1>
+        <h1>An error occurred:</h1>
+        <h2>{error}</h2>
       </div>
     );
   }
@@ -94,7 +110,11 @@ const App = () => {
             expand="md"
             container="fluid"
           />
-          <RouteList signUp={signUp} login={login} />
+          <RouteList
+            signUp={signUp}
+            login={login}
+            urlBase64ToUint8Array={urlBase64ToUint8Array}
+          />
         </UserContext.Provider>
       </BrowserRouter>
     </>

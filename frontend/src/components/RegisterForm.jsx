@@ -60,9 +60,6 @@ const RegisterForm = () => {
           applicationServerKey: urlBase64ToUint8Array(VITE_VAPID_PUBLIC_KEY),
         });
 
-        console.log(subscription);
-        console.log(userId);
-
         await axios.post(
           `http://localhost:3001/push/subscribe/${userId}`,
           subscription,

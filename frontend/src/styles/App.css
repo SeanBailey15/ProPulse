@@ -1,3 +1,8 @@
+.App {
+  text-align: center;
+  margin-top: 40%;
+}
+
 .App-spinner {
   margin: 50%;
   align-self: center;

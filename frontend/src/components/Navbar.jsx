@@ -29,7 +29,7 @@ export default function NavBar(args) {
       <Navbar {...args}>
         <Link className="Nav-brand" to="/">
           <img
-            src="../public/icons/ProPulse-navBrand.svg"
+            src="../icons/ProPulse-navBrand.svg"
             alt="Propulse logo"
             width="200px"
             height="50px"

@@ -2,10 +2,16 @@ import { Formik } from "formik";
 import { Form, FormGroup, Label, Input, InputGroup, Button } from "reactstrap";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import ProPulseApi from "../api";
 import "../styles/SignUpForm.css";
 
-export default function SignUpForm({ signUp }) {
+const VITE_VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+
+export default function SignUpForm({ signUp, urlBase64ToUint8Array }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [agreeToNotifications, setAgreeToNotifications] = useState(false);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -90,11 +96,28 @@ export default function SignUpForm({ signUp }) {
         }}
         onSubmit={async (values) => {
           try {
-            await signUp(values);
+            const token = await signUp(values);
+
+            const user = jwtDecode(token);
+            const userId = user.id;
+
+            if (agreeToNotifications && "serviceWorker" in navigator) {
+              const registration = await navigator.serviceWorker.ready;
+              const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(
+                  VITE_VAPID_PUBLIC_KEY
+                ),
+              });
+
+              await ProPulseApi.storeSubscription(userId, subscription);
+            }
+
             navigate("/", { replace: true });
           } catch (err) {
             console.error(err);
-            navigate("/error", { state: { error: err } });
+            setError(err);
+            navigate("/error", { state: { error: error } });
           }
         }}
       >
@@ -251,6 +274,38 @@ export default function SignUpForm({ signUp }) {
                 )}
               </Button>
             </InputGroup>
+
+            <p className="Form-notifcations-text">
+              Please consider giving consent to receive notifications in order
+              to get the most out of your ProPulse experience.
+            </p>
+            <p className="Form-notifcations-text">
+              We only send notifications in the event you are invited to
+              participate in a project, you are promoted to admin of a project,
+              or you are tagged in a post.
+            </p>
+            <p className="Form-notifcations-text">
+              If you check this box, you will still be prompted by the browser
+              to accept notifications. Please consider allowing ProPulse to help
+              you stay up to date on your projects.
+            </p>
+            <FormGroup>
+              <Input
+                className="Form-input"
+                id="checkbox"
+                name="checkbox"
+                type="checkbox"
+                checked={agreeToNotifications}
+                onChange={(e) => {
+                  setAgreeToNotifications(e.target.checked);
+                }}
+              />
+
+              <Label className="Form-label-checkbox" for="checkbox">
+                I agree to receive notifications from ProPulse (optional)
+              </Label>
+            </FormGroup>
+
             <Button className="Form-btn" type="submit">
               Submit
             </Button>
