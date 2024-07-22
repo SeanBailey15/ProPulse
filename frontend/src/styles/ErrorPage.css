@@ -35,6 +35,11 @@
   margin: 1rem;
 }
 
+.Error-list {
+  text-align: center;
+  padding-inline-start: 0;
+}
+
 .Error-item {
   list-style: none;
   font-size: x-large;

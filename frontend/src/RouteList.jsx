@@ -4,6 +4,12 @@ import Home from "./components/Home";
 import SignUpForm from "./components/SignUpForm";
 import LoginForm from "./components/LoginForm";
 import ProfileForm from "./components/ProfileForm";
+import UserInfo from "./components/UserInfo";
+import Dashboard from "./components/Dashboard";
+import JobForm from "./components/JobForm";
+import Job from "./components/Job";
+import PostForm from "./components/PostForm";
+import PostDetails from "./components/PostDetails";
 import ErrorPage from "./components/ErrorPage";
 
 export default function RouteList({ signUp, login, urlBase64ToUint8Array }) {
@@ -23,6 +29,12 @@ export default function RouteList({ signUp, login, urlBase64ToUint8Array }) {
       <Route exact path="/login" element={<LoginForm login={login} />} />
       <Route element={<ProtectedRoute />}>
         <Route exact path="/users/:id" element={<ProfileForm />} />
+        <Route exact path="/users/info/:id" element={<UserInfo />} />
+        <Route exact path="/users/dashboard/:id" element={<Dashboard />} />
+        <Route exact path="/newProject" element={<JobForm />} />
+        <Route exact path="/projects/:id" element={<Job />} />
+        <Route exact path="/projects/:id/createPost" element={<PostForm />} />
+        <Route exact path="/posts/:id" element={<PostDetails />} />
       </Route>
       <Route path="/error" element={<ErrorPage />} />
       <Route path="*" element={<ErrorPage />} />

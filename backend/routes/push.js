@@ -33,7 +33,7 @@ router.post("/subscribe/:id", async function (req, res, next) {
 
     const notificationPayload = {
       title: `Welcome to ProPulse ${recipient.firstName}!`,
-      body: `Please tell your friends and co-workers about us!`,
+      body: `Thank you for joining! Please tell your friends and co-workers about us!`,
     };
 
     await sendPushNotification(recipient.subscriptions, notificationPayload);

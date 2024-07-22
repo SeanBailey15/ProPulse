@@ -13,6 +13,17 @@ export default function Home() {
       {currentUser && (
         <h3 className="Home-msg">{`Welcome ${currentUser.firstName}!`}</h3>
       )}
+      {currentUser && (
+        <h4 className="Home-msg">
+          Head to the{" "}
+          <Link
+            className="Home-msg-link"
+            to={`/users/dashboard/${currentUser.id}`}
+          >
+            Dashboard
+          </Link>
+        </h4>
+      )}
       {!currentUser && (
         <h3 className="Home-msg">
           Please{" "}
@@ -30,7 +41,7 @@ export default function Home() {
         Keep your finger on the pulse of your next project!
       </p>
       <p className="Home-text">
-        Accessible, responsive communication for you and your team.
+        Accessible, lightweight communication for you and your team.
       </p>
     </div>
   );

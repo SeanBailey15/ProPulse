@@ -52,9 +52,39 @@ export default class ProPulseApi {
     return res;
   }
 
+  static async getUser(id) {
+    let res = await this.request(`users/${id}`);
+    return res;
+  }
+
   static async storeSubscription(id, data) {
     const headers = { "Content-Type": "application/json" };
     let res = await this.request(`push/subscribe/${id}`, data, headers, "post");
     console.log(res);
+  }
+
+  static async createJob(data) {
+    let res = await this.request(`jobs`, data, {}, "post");
+    return res;
+  }
+
+  static async getUserJobs(id) {
+    let res = await this.request(`jobs/user/${id}`);
+    return res;
+  }
+
+  static async getJob(id) {
+    let res = await this.request(`jobs/${id}`);
+    return res;
+  }
+
+  static async createPost(data, jobId) {
+    let res = await this.request(`posts/${jobId}`, data, {}, "post");
+    return res;
+  }
+
+  static async getPost(id) {
+    let res = await this.request(`posts/${id}`);
+    return res;
   }
 }

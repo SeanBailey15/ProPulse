@@ -32,9 +32,9 @@ export default function ErrorPage() {
       <h2 className="Error-msg">The following errors have occurred:</h2>
       <ul className="Error-list">
         {state.error.map((e) => (
-          <li className="Error-item" key={uuid()}>
+          <p className="Error-item" key={uuid()}>
             {e}
-          </li>
+          </p>
         ))}
       </ul>
       <Button className="Error-btn" onClick={goBack}>

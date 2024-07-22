@@ -1,0 +1,62 @@
+.User {
+  box-sizing: border-box;
+  margin: 1rem;
+}
+
+@media (min-width: 768px) {
+  .User-card {
+    width: 60%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: rgb(160, 160, 160);
+  }
+}
+
+@media (max-width: 767px) {
+  .User-card {
+    width: 95%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: rgb(160, 160, 160);
+  }
+}
+
+.User-title {
+  text-align: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.User-list {
+  width: 80%;
+  text-align: center;
+  margin: auto;
+}
+
+.User-listItem {
+  background-color: lightgray;
+}
+
+.User-listHeading {
+  padding: 0.5rem 0;
+  margin: 0;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.User-listText {
+  font-weight: 600;
+  margin-top: 0.5rem;
+  margin-bottom: auto;
+}
+
+.User-btn {
+  margin: 1rem 1rem 0 1rem;
+}
+
+.User-spinner {
+  margin: 50%;
+  align-self: center;
+}

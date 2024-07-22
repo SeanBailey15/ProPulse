@@ -1,15 +1,15 @@
 import { Formik } from "formik";
 import { Form, FormGroup, Label, Input, Button } from "reactstrap";
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
 import ProPulseApi from "../api";
 import "../styles/ProfileForm.css";
 
 export default function ProfileForm() {
-  const { currentUser, setCurrentUser, token, setToken } =
-    useContext(UserContext);
+  const { currentUser, setCurrentUser, setToken } = useContext(UserContext);
 
+  const { id } = useParams();
   const navigate = useNavigate();
 
   async function updateProfile(formData) {
@@ -17,6 +17,19 @@ export default function ProfileForm() {
     const update = await ProPulseApi.updateProfile(id, formData);
     return update;
   }
+  console.log(currentUser.id);
+  console.log(id);
+
+  useEffect(() => {
+    function matchIds() {
+      if (currentUser.id !== +id) {
+        navigate("/error", {
+          state: { error: ["Unauthorized: You cannot access this page"] },
+        });
+      }
+    }
+    matchIds();
+  }, [id]);
 
   return (
     <div className="Form">

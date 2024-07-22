@@ -10,7 +10,7 @@ const Post = require("../models/post");
 const User = require("../models/user");
 const postNewSchema = require("../schemas/postNew.json");
 const replyNewSchema = require("../schemas/replyNew.json");
-const { BASE_URL } = require("../config");
+const { FRONTEND_URL } = require("../config");
 const { sendPushNotification } = require("../helpers/pushNotification");
 const { ensureLoggedIn, ensureJobMatch } = require("../middleware/auth");
 
@@ -51,7 +51,7 @@ router.post(
         const notificationPayload = {
           title: `${res.locals.user.email} tagged you in a post!`,
           body: `Click the link to view the message.`,
-          url: `${BASE_URL}/posts/${post.id}`,
+          url: `${FRONTEND_URL}/posts/${post.id}`,
         };
 
         await sendPushNotification(subscriptions, notificationPayload);

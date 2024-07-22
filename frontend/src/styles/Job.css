@@ -1,0 +1,101 @@
+.Job {
+  box-sizing: border-box;
+  margin: 1rem;
+}
+
+@media (min-width: 768px) {
+  .Job-card {
+    width: 60%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: rgb(160, 160, 160);
+  }
+}
+
+@media (max-width: 767px) {
+  .Job-card {
+    width: 95%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: rgb(160, 160, 160);
+  }
+}
+
+.Job-title {
+  text-align: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.Job-list {
+  width: 90%;
+  text-align: center;
+  margin: auto;
+}
+
+.Job-listItem {
+  background-color: lightgray;
+}
+
+.Job-listHeading {
+  padding: 0.5rem 0;
+  margin: 0;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.Job-listText {
+  font-weight: 600;
+  margin-top: 0.5rem;
+  margin-bottom: auto;
+}
+
+.Job-btn {
+  margin: 1rem 1rem 0 1rem;
+}
+
+.Job-btn-link {
+  text-decoration: none;
+  color: white;
+}
+
+.Job-btn-link:visited {
+  color: white;
+}
+
+.Job-userLink {
+  color: black;
+}
+
+.Job-userLink:visited {
+  color: black;
+}
+
+.Job-userLink:hover {
+  color: blue;
+}
+
+.Job-spinner {
+  margin: 50%;
+  align-self: center;
+}
+
+.Job-list-post {
+  width: 90%;
+  margin: auto;
+}
+
+.Job-listItem-post {
+  background-color: rgba(0, 100, 150, 100);
+  border: 1px solid rgba(0, 100, 150, 100);
+}
+
+.Job-listHeading-post {
+  color: white;
+}
+
+.Job-listItem-postItem {
+  background-color: lightgray;
+}

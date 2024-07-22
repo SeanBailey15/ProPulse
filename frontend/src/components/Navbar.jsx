@@ -53,6 +53,19 @@ export default function NavBar(args) {
               </NavItem>
             )}
             {currentUser && (
+              <NavItem>
+                <Link
+                  className="Nav-link"
+                  to={`/users/dashboard/${currentUser.id}`}
+                  onClick={() => {
+                    toggle();
+                  }}
+                >
+                  Dashboard
+                </Link>
+              </NavItem>
+            )}
+            {currentUser && (
               <>
                 <NavItem className="d-none d-md-block">
                   <Link

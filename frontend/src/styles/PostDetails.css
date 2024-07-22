@@ -1,0 +1,101 @@
+.PostDetails {
+  box-sizing: border-box;
+  margin: 1rem;
+}
+
+@media (min-width: 768px) {
+  .PostDetails-card {
+    width: 60%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: rgb(160, 160, 160);
+  }
+}
+
+@media (max-width: 767px) {
+  .PostDetails-card {
+    width: 95%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: rgb(160, 160, 160);
+  }
+}
+
+.PostDetails-title {
+  text-align: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: rgba(0, 100, 150, 100);
+  border-radius: 10px;
+  color: white;
+}
+
+.PostDetails-list {
+  width: 100%;
+  text-align: left;
+  margin: auto;
+}
+
+.PostDetails-listItem {
+  background-color: white;
+}
+
+.PostDetails-listHeading {
+  padding: 0.5rem 0;
+  margin: 0;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.PostDetails-listText {
+  margin-top: 0.5rem;
+  margin-bottom: auto;
+}
+
+.PostDetails-btn {
+  margin: 1rem 1rem 0 1rem;
+}
+
+.PostDetails-btn-link {
+  text-decoration: none;
+  color: white;
+}
+
+.PostDetails-btn-link:visited {
+  color: white;
+}
+
+.PostDetails-link {
+  color: white;
+}
+
+.PostDetails-link:visited {
+  color: white;
+}
+
+.PostDetails-link:hover {
+  color: blue;
+}
+
+.PostDetails-spinner {
+  margin: 50%;
+  align-self: center;
+}
+
+.PostDetails-list-reply {
+  width: 90%;
+  margin: auto;
+}
+
+.PostDetails-listItem-reply {
+  background-color: rgba(0, 100, 150, 100);
+  border: 1px solid rgba(0, 100, 150, 100);
+}
+
+.PostDetails-listHeading-reply {
+  color: white;
+}
+
+.PostDetails-listItem-replyItem {
+  background-color: lightgray;
+}

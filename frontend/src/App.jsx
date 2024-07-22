@@ -66,6 +66,7 @@ const App = () => {
   async function login(formData) {
     const token = await ProPulseApi.loginUser(formData);
     setToken(token);
+    return token;
   }
 
   function logout() {
