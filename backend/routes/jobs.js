@@ -4,7 +4,7 @@
 
 const jsonschema = require("jsonschema");
 const jwt = require("jsonwebtoken");
-const { SECRET_KEY, BASE_URL } = require("../config");
+const { SECRET_KEY, BASE_URL, FRONTEND_URL } = require("../config");
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
@@ -116,7 +116,7 @@ router.post(
       const notificationPayload = {
         title: `${recipient.firstName}, you have an invitation!`,
         body: `${sender} has invited you to a project. Click to accept.`,
-        url: `${BASE_URL}/jobs/invitation?token=${token}`,
+        url: `${FRONTEND_URL}/invitation?token=${token}`,
       };
 
       await sendPushNotification(recipient.subscriptions, notificationPayload);

@@ -29,7 +29,7 @@ export default function Job() {
         setJob(res.job);
       } catch (err) {
         console.error(err);
-        const errorMessage = err || "An unexpected error occurred.";
+        const errorMessage = err || ["An unexpected error occurred."];
         navigate("/error", { state: { error: errorMessage } });
       } finally {
         setIsLoading(false);
@@ -91,6 +91,13 @@ export default function Job() {
             </ListGroupItemText>
           </ListGroupItem>
         </ListGroup>
+        {job.privilege && (
+          <Button className="Form-btn">
+            <Link className="Job-btn-link" to={`/invite/${id}`}>
+              Invite A User
+            </Link>
+          </Button>
+        )}
         <Button className="Form-btn">
           <Link className="Job-btn-link" to={`/projects/${id}/createPost`}>
             Create A Post

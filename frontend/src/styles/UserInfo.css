@@ -25,8 +25,9 @@
   text-align: center;
   padding-top: 1rem;
   padding-bottom: 1rem;
-  background-color: white;
+  background-color: rgba(0, 100, 150, 100);
   border-radius: 10px;
+  color: white;
 }
 
 .User-list {
@@ -42,8 +43,9 @@
 .User-listHeading {
   padding: 0.5rem 0;
   margin: 0;
-  background-color: white;
+  background-color: rgba(0, 100, 150, 100);
   border-radius: 10px;
+  color: white;
 }
 
 .User-listText {

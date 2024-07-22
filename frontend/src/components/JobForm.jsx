@@ -60,7 +60,7 @@ export default function JobForm() {
             navigate(`/users/dashboard/${currentUser.id}`, { replace: true });
           } catch (err) {
             console.error(err);
-            const errorMessage = err || "An unexpected error occurred.";
+            const errorMessage = err || ["An unexpected error occurred."];
             navigate("/error", { state: { error: errorMessage } });
           }
         }}

@@ -31,6 +31,8 @@ self.addEventListener("notificationclick", function (event) {
     return;
   }
 
+  console.log("Opening URL:", url); // Log the URL being opened
+
   // Focus on an existing window or open a new window
   event.waitUntil(
     clients
@@ -58,5 +60,13 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     self.clients.claim() // Claim clients immediately
+  );
+});
+
+self.addEventListener("fetch", function (event) {
+  event.respondWith(
+    fetch(event.request).catch(function () {
+      return caches.match(event.request);
+    })
   );
 });

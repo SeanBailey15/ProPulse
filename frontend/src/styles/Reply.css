@@ -1,0 +1,19 @@
+.Reply-card-link {
+  text-decoration: none;
+  margin: 0;
+}
+
+.Reply-title {
+  background-color: rgba(0, 100, 150, 100);
+  color: white;
+  border-radius: 5px;
+  font-size: x-small;
+  padding: 0.25rem;
+}
+
+.Reply-text {
+  background-color: rgb(230, 230, 230);
+  border-radius: 5px;
+  font-size: smaller;
+  padding: 0.5rem;
+}

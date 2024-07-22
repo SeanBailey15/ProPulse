@@ -87,4 +87,24 @@ export default class ProPulseApi {
     let res = await this.request(`posts/${id}`);
     return res;
   }
+
+  static async createReply(data, postId) {
+    let res = await this.request(`posts/reply/${postId}`, data, {}, "post");
+    return res;
+  }
+
+  static async getReply(id) {
+    let res = await this.request(`posts/replies/${id}`);
+    return res;
+  }
+
+  static async inviteUser(data, id) {
+    let res = await this.request(`jobs/invite/${id}`, data, {}, "post");
+    return res;
+  }
+
+  static async getInvite() {
+    let res = await this.request(`jobs/invitation`);
+    return res;
+  }
 }

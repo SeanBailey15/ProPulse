@@ -28,7 +28,7 @@ export default function UserInfo() {
         setUser(res.user);
       } catch (err) {
         console.error(err);
-        const errorMessage = err || "An unexpected error occurred.";
+        const errorMessage = err || ["An unexpected error occurred."];
         navigate("/error", { state: { error: errorMessage } });
       } finally {
         setIsLoading(false);
@@ -54,7 +54,7 @@ export default function UserInfo() {
   return (
     <div className="User">
       <Card className="User-card">
-        <CardTitle className="User-title" tag="h1">
+        <CardTitle className="User-title">
           <h1>{user.email}</h1>
           <h2>Contact Information</h2>
         </CardTitle>

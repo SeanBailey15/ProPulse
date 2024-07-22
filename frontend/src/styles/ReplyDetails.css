@@ -1,10 +1,10 @@
-.Job {
+.ReplyDetails {
   box-sizing: border-box;
   margin: 1rem;
 }
 
 @media (min-width: 768px) {
-  .Job-card {
+  .ReplyDetails-card {
     width: 60%;
     margin: 0 auto;
     padding: 1.5rem;
@@ -13,7 +13,7 @@
 }
 
 @media (max-width: 767px) {
-  .Job-card {
+  .ReplyDetails-card {
     width: 95%;
     margin: 0 auto;
     padding: 1.5rem;
@@ -21,7 +21,7 @@
   }
 }
 
-.Job-title {
+.ReplyDetails-title {
   text-align: center;
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -30,74 +30,72 @@
   color: white;
 }
 
-.Job-list {
-  width: 90%;
-  text-align: center;
+.ReplyDetails-list {
+  width: 100%;
+  text-align: left;
   margin: auto;
 }
 
-.Job-listItem {
-  background-color: lightgray;
+.ReplyDetails-listItem {
+  background-color: white;
 }
 
-.Job-listHeading {
+.ReplyDetails-listHeading {
   padding: 0.5rem 0;
   margin: 0;
-  background-color: rgba(0, 100, 150, 100);
+  background-color: white;
   border-radius: 10px;
-  color: white;
 }
 
-.Job-listText {
-  font-weight: 600;
+.ReplyDetails-listText {
   margin-top: 0.5rem;
   margin-bottom: auto;
 }
 
-.Job-btn {
+.ReplyDetails-btn {
   margin: 1rem 1rem 0 1rem;
 }
 
-.Job-btn-link {
+.ReplyDetails-btn-link {
   text-decoration: none;
   color: white;
 }
 
-.Job-btn-link:visited {
+.ReplyDetails-btn-link:visited {
   color: white;
 }
 
-.Job-userLink {
-  color: black;
+.ReplyDetails-link {
+  color: white;
 }
 
-.Job-userLink:visited {
-  color: black;
+.ReplyDetails-link:visited {
+  color: white;
 }
 
-.Job-userLink:hover {
+.ReplyDetails-link:hover {
   color: blue;
 }
 
-.Job-spinner {
+.ReplyDetails-spinner {
   margin: 50%;
   align-self: center;
 }
 
-.Job-list-post {
+.ReplyDetails-list-reply {
   width: 90%;
   margin: auto;
 }
 
-.Job-listItem-post {
+.ReplyDetails-listItem-reply {
   background-color: rgba(0, 100, 150, 100);
   border: 1px solid rgba(0, 100, 150, 100);
 }
 
-.Job-listHeading-post {
+.ReplyDetails-listHeading-reply {
   color: white;
 }
 
-.Job-listItem-postItem {
+.ReplyDetails-listItem-replyItem {
   background-color: lightgray;
 }

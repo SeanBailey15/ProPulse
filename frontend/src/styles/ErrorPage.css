@@ -25,10 +25,11 @@
 }
 
 .Error-title {
-  background-color: darkgrey;
+  background-color: rgba(0, 100, 150, 100);
   border-radius: 10px;
   margin: 1rem;
   padding: 1rem;
+  color: white;
 }
 
 .Error-msg {

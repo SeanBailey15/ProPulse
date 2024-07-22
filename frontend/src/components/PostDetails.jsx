@@ -12,6 +12,7 @@ import {
 } from "reactstrap";
 import { v4 as uuid } from "uuid";
 import ProPulseApi from "../api";
+import Reply from "./Reply";
 import "../styles/PostDetails.css";
 
 export default function PostDetails() {
@@ -28,7 +29,7 @@ export default function PostDetails() {
         setPost(res.post);
       } catch (err) {
         console.error(err);
-        const errorMessage = err || "An unexpected error occurred.";
+        const errorMessage = err || ["An unexpected error occurred."];
         navigate("/error", { state: { error: errorMessage } });
       } finally {
         setIsLoading(false);
@@ -79,11 +80,33 @@ export default function PostDetails() {
         <Button className="Form-btn">
           <Link
             className="PostDetails-btn-link"
-            to={`/projects/${id}/createPost`}
+            to={`/posts/${id}/createReply`}
           >
             Create A Reply
           </Link>
         </Button>
+        {post.replies && (
+          <>
+            <ListGroup className="PostDetails-list-reply">
+              <ListGroupItem
+                className="PostDetails-listItem-reply"
+                key={uuid()}
+              >
+                <ListGroupItemHeading className="PostDetails-listHeading-reply">
+                  Replies
+                </ListGroupItemHeading>
+              </ListGroupItem>
+              {post.replies.map((reply) => (
+                <ListGroupItem
+                  className="replyDetails-listItem-replyItem"
+                  key={reply.id}
+                >
+                  <Reply reply={reply} />
+                </ListGroupItem>
+              ))}
+            </ListGroup>
+          </>
+        )}
       </Card>
     </div>
   );

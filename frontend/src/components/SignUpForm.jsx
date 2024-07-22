@@ -36,7 +36,7 @@ export default function SignUpForm({ signUp, urlBase64ToUint8Array }) {
       }
     } catch (err) {
       console.error(err);
-      const errorMessage = err || "An unexpected error occurred.";
+      const errorMessage = err || ["An unexpected error occurred."];
       navigate("/error", { state: { error: errorMessage } });
     }
   };

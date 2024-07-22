@@ -112,7 +112,7 @@ export default function ProfileForm() {
             navigate("/", { replace: true });
           } catch (err) {
             console.error(err);
-            const errorMessage = err || "An unexpected error occurred.";
+            const errorMessage = err || ["An unexpected error occurred."];
             navigate("/error", { state: { error: errorMessage } });
           }
         }}

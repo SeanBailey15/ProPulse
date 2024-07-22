@@ -101,7 +101,7 @@ router.post("/reply/:postId", ensureLoggedIn, async function (req, res, next) {
       const notificationPayload = {
         title: `${res.locals.user.email} tagged you in a reply!`,
         body: `Click the link to view the message.`,
-        url: `${BASE_URL}/posts/replies/${reply.id}`,
+        url: `${FRONTEND_URL}/replies/${reply.id}`,
       };
 
       await sendPushNotification(subscriptions, notificationPayload);

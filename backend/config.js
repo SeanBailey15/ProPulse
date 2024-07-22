@@ -21,7 +21,7 @@ const JEST_CONFIG_ROOT_PATH = process.env.JEST_CONFIG_ROOT_PATH;
 // Other configuration
 const BASE_URL = process.env.BASE_URL || "localhost:3001";
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "localhost:5173";
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 const SECRET_KEY = process.env.SECRET_KEY || "secret-dev";
 

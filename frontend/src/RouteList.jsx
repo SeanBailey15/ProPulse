@@ -10,6 +10,9 @@ import JobForm from "./components/JobForm";
 import Job from "./components/Job";
 import PostForm from "./components/PostForm";
 import PostDetails from "./components/PostDetails";
+import ReplyForm from "./components/ReplyForm";
+import ReplyDetails from "./components/ReplyDetails";
+import InviteForm from "./components/InviteForm";
 import ErrorPage from "./components/ErrorPage";
 
 export default function RouteList({ signUp, login, urlBase64ToUint8Array }) {
@@ -35,6 +38,9 @@ export default function RouteList({ signUp, login, urlBase64ToUint8Array }) {
         <Route exact path="/projects/:id" element={<Job />} />
         <Route exact path="/projects/:id/createPost" element={<PostForm />} />
         <Route exact path="/posts/:id" element={<PostDetails />} />
+        <Route exact path="/posts/:id/createReply" element={<ReplyForm />} />
+        <Route exact path="/replies/:id" element={<ReplyDetails />} />
+        <Route exact path="/invite/:id" element={<InviteForm />} />
       </Route>
       <Route path="/error" element={<ErrorPage />} />
       <Route path="*" element={<ErrorPage />} />

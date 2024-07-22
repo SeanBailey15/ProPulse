@@ -2,15 +2,15 @@ import { Formik } from "formik";
 import { Form, FormGroup, FormText, Label, Input, Button } from "reactstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import ProPulseApi from "../api";
-import "../styles/PostForm.css";
+import "../styles/ReplyForm.css";
 
-export default function PostForm() {
+export default function ReplyForm() {
   const navigate = useNavigate();
   const { id } = useParams();
 
   return (
     <div className="Form">
-      <h1 className="Form-title">Create A Post</h1>
+      <h1 className="Form-title">Create A Reply</h1>
 
       <Formik
         initialValues={{
@@ -30,8 +30,8 @@ export default function PostForm() {
           try {
             let taggedArray = values.tagged.split(",");
             values.tagged = taggedArray;
-            await ProPulseApi.createPost(values, id);
-            navigate(`/projects/${id}`, { replace: true });
+            await ProPulseApi.createReply(values, id);
+            navigate(`/posts/${id}`, { replace: true });
           } catch (err) {
             console.error(err);
             const errorMessage = err || ["An unexpected error occurred."];
