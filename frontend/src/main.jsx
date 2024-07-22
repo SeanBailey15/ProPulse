@@ -9,12 +9,28 @@ if ("serviceWorker" in navigator) {
       .register("/serviceWorker.jsx")
       .then((registration) => {
         console.log(
-          "ServiceWorker registration successful with scope: ",
+          "ServiceWorker registration successful with scope:",
           registration.scope
         );
+
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          if (installingWorker) {
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === "installed") {
+                if (navigator.serviceWorker.controller) {
+                  console.log("New content is available; please refresh.");
+                  // Optionally prompt the user to refresh
+                } else {
+                  console.log("Content is now available offline!");
+                }
+              }
+            };
+          }
+        };
       })
       .catch((error) => {
-        console.log("ServiceWorker registration failed: ", error);
+        console.error("ServiceWorker registration failed:", error);
       });
   });
 }

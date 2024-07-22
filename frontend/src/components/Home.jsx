@@ -11,7 +11,7 @@ export default function Home() {
       <h1 className="Home-title">Welcome to ProPulse!</h1>
       <h2 className="Home-msg">Your hub for project communication</h2>
       {currentUser && (
-        <h3 className="Home-msg">{`Nice to see you again ${currentUser.firstName}!`}</h3>
+        <h3 className="Home-msg">{`Welcome ${currentUser.firstName}!`}</h3>
       )}
       {!currentUser && (
         <h3 className="Home-msg">

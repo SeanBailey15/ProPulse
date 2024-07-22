@@ -1,13 +1,5 @@
 import { Formik } from "formik";
-import {
-  Form,
-  FormGroup,
-  FormText,
-  Label,
-  Input,
-  InputGroup,
-  Button,
-} from "reactstrap";
+import { Form, FormGroup, Label, Input, Button } from "reactstrap";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
@@ -107,7 +99,8 @@ export default function ProfileForm() {
             navigate("/", { replace: true });
           } catch (err) {
             console.error(err);
-            navigate("/error", { state: { error: err } });
+            const errorMessage = err || "An unexpected error occurred.";
+            navigate("/error", { state: { error: errorMessage } });
           }
         }}
       >

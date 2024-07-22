@@ -8,6 +8,7 @@ const express = require("express");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const newSubscriptionSchema = require("../schemas/newSubscription.json");
+const { sendPushNotification } = require("../helpers/pushNotification");
 
 const router = express.Router();
 
@@ -24,6 +25,18 @@ router.post("/subscribe/:id", async function (req, res, next) {
     const userId = req.params.id;
 
     const result = await User.addSubscription(subscription, userId);
+
+    const recipient = await User.get(userId);
+
+    if (!recipient.subscriptions)
+      throw new BadRequestError("This user is not subscribed to notifications");
+
+    const notificationPayload = {
+      title: `Welcome to ProPulse ${recipient.firstName}!`,
+      body: `Please tell your friends and co-workers about us!`,
+    };
+
+    await sendPushNotification(recipient.subscriptions, notificationPayload);
 
     return res.json(result);
   } catch (err) {

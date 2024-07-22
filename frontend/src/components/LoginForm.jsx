@@ -55,7 +55,8 @@ export default function LoginForm({ login }) {
             navigate("/", { replace: true });
           } catch (err) {
             console.error(err);
-            navigate("/error", { state: { error: err } });
+            const errorMessage = err || "An unexpected error occurred.";
+            navigate("/error", { state: { error: errorMessage } });
           }
         }}
       >

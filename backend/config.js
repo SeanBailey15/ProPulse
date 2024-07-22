@@ -21,6 +21,8 @@ const JEST_CONFIG_ROOT_PATH = process.env.JEST_CONFIG_ROOT_PATH;
 // Other configuration
 const BASE_URL = process.env.BASE_URL || "localhost:3001";
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "localhost:5173";
+
 const SECRET_KEY = process.env.SECRET_KEY || "secret-dev";
 
 const PORT = +process.env.PORT || 3001;
@@ -49,6 +51,7 @@ console.log("----------".blue);
 
 module.exports = {
   BASE_URL,
+  FRONTEND_URL,
   SECRET_KEY,
   PORT,
   PGPASSWORD,

@@ -59,7 +59,7 @@ const App = () => {
 
   async function signUp(formData) {
     const token = await ProPulseApi.registerUser(formData);
-    setToken(token);
+    await setToken(token);
     return token;
   }
 

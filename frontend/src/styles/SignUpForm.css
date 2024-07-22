@@ -48,3 +48,13 @@
   width: 100%;
   margin: 0.5rem 0;
 }
+
+.Form-notifications-text {
+  font-size: small;
+  margin-top: 0.25rem;
+}
+
+.Form-label-checkbox {
+  margin-left: 0.5rem;
+  margin-bottom: 0;
+}

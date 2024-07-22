@@ -29,7 +29,7 @@ export default function ErrorPage() {
   return (
     <div className="Error">
       <h1 className="Error-title">Oh No!</h1>
-      <h2 className="Error-msg">The following error has occurred:</h2>
+      <h2 className="Error-msg">The following errors have occurred:</h2>
       <ul className="Error-list">
         {state.error.map((e) => (
           <li className="Error-item" key={uuid()}>
