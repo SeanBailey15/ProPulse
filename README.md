@@ -1,21 +1,39 @@
-# ![Propulse](frontend/public/icons/ProPulse-navBrand.svg)
+# ![ProPulse](frontend/public/icons/ProPulse-navBrand.svg)
 
 ## Description
 
-This is my capstone project for the Springboard Software Engineering Bootcamp course.
+This is my capstone project for the Springboard Software Engineering Bootcamp.
 
-The vision for ProPulse is to create a social media-like environment for communication. Simple, efficient, and intuitive.
+The vision for ProPulse is to create a team-focused environment for project communication. Simple, efficient, and intuitive.
 
 Users can create a project thread, invite fellow users to the project thread as they see fit, and post or reply to fellow participants. If you want to grab a specific person's attention, you can tag them in your post or reply, and they will receive a notification if they've given consent.
+
+You can find the live project here:
+
+\*_Placeholder for link_
 
 ### Tech Stack
 
 #### Frontend
 
-- Vite
-- ReactJS
+- Framework: React 18
+- Build Tool: Vite 5
+- Routing: React Router 6
+- State Management In Forms: Formik
+- Styling: Bootstrap 5, Reactstrap
 
-## TLDR
+#### Backend
+
+- Runtime: Nodejs
+- Framework: ExpressJS
+- Database: PostgreSQL
+- Direct Queries via node-postgres
+- Authentication: JSON Web Tokens (jsonwebtoken)
+- Schema Validation: jsonschema
+- Security: Bcrypt
+- Push Notifications: Web-push
+
+## TLDR: Goal
 
 My goal with ProPulse is to streamline project communication.
 
