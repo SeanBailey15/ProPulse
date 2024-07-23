@@ -107,4 +107,10 @@ export default class ProPulseApi {
     let res = await this.request(`jobs/invitation`);
     return res;
   }
+
+  static async acceptInvite(token) {
+    let res = await this.request(`jobs/accept?${token}`, {}, {}, "post");
+    console.log(res);
+    return res;
+  }
 }

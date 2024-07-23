@@ -108,7 +108,7 @@ router.post(
       const tokenPayload = {
         invited: recipient.id,
         privilege: privilege,
-        jobId: jobId,
+        jobId: +jobId,
       };
 
       const token = jwt.sign(tokenPayload, SECRET_KEY);
@@ -170,7 +170,19 @@ router.post("/accept", ensureLoggedIn, async function (req, res, next) {
 
     const message = await Job.associate(jobId, invited, privilege);
 
-    return res.json(message);
+    const user = { ...res.locals.user };
+
+    const userJobs = await Job.findUserJobs(user.id);
+
+    if (userJobs.length > 0) {
+      user.jobs = userJobs.map((j) => j.id);
+    } else if (userJobs.message) {
+      user.message = userJobs.message;
+    }
+
+    const authToken = createToken(user);
+
+    return res.json({ message, authToken });
   } catch (err) {
     return next(err);
   }

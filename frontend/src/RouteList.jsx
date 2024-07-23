@@ -13,6 +13,7 @@ import PostDetails from "./components/PostDetails";
 import ReplyForm from "./components/ReplyForm";
 import ReplyDetails from "./components/ReplyDetails";
 import InviteForm from "./components/InviteForm";
+import Invitation from "./components/Invitation";
 import ErrorPage from "./components/ErrorPage";
 
 export default function RouteList({ signUp, login, urlBase64ToUint8Array }) {
@@ -41,6 +42,7 @@ export default function RouteList({ signUp, login, urlBase64ToUint8Array }) {
         <Route exact path="/posts/:id/createReply" element={<ReplyForm />} />
         <Route exact path="/replies/:id" element={<ReplyDetails />} />
         <Route exact path="/invite/:id" element={<InviteForm />} />
+        <Route exact path="/invitation" element={<Invitation />} />
       </Route>
       <Route path="/error" element={<ErrorPage />} />
       <Route path="*" element={<ErrorPage />} />
