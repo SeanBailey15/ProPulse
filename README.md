@@ -1,4 +1,4 @@
-# ProPulse ![Proulse](icons/ProPulse-navBrand)
+# ![Propulse](frontend/public/icons/ProPulse-navBrand.svg)
 
 ## Description
 
