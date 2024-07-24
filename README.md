@@ -12,7 +12,7 @@ Users can create a project thread, invite fellow users to the project thread as 
 
 You can find the live project here:
 
-\*_Placeholder for link_
+[ProPulse](https://propulse-frontend.onrender.com)
 
 ### Tech Stack
 
@@ -52,10 +52,10 @@ The intent with ProPulse is to provide a dedicated channel for teams that need t
 
 For local installation, follow these instructions :
 
-1. Clone the repository into a directory named ProPulse :
+1. Clone the repository :
 
    ```bash
-   git clone https://github.com/SeanBailey15/ProPulse_Springboard_Capstone.git ProPulse
+   git clone https://github.com/SeanBailey15/ProPulse.git
    ```
 
 2. Navigate into the directory :
@@ -188,6 +188,8 @@ There is so much more I want to add to this project including, but not limited t
 - Fix a pesky bug with the logo after submitting forms 😒
 
 And that is just off the top of my head!
+
+I also plan to write separate documentation for the backend API, but I've got a deadline! 🤣
 
 ## Thank You
 
