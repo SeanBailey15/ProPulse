@@ -1,5 +1,7 @@
 # ![ProPulse](frontend/public/icons/ProPulse-navBrand.svg)
 
+![Sign Up Gif](frontend/public/clips/SignUp.gif)
+
 ## Description
 
 This is my capstone project for the Springboard Software Engineering Bootcamp.
@@ -162,8 +164,53 @@ Before running the app, you will need to set up some configuration files in the 
 
 9. You may now proceed to step 5 of the Installation instructions.
 
-## What Next?
+## Current Functionality
 
-### Sign Up!
+- Create an account
+- Edit your user information
+- Create a project
+- Invite users to the project
+- Create posts for the project
+- Reply to posts
 
-![Sign Up Gif](frontend/public/clips/SignUp.gif)
+![Create a project](frontend/public/clips/CreateProject.gif)
+![Create a post](frontend/public/clips/CreatePost.gif)
+![Create a reply](frontend/public/clips/CreateReply.gif)
+
+## Planned Functionality
+
+There is so much more I want to add to this project including, but not limited to:
+
+- See a list of participants for a project
+- Editing project details
+- Project admin can manually add users without an invite
+- UI improvements too numerous to list
+- Fix a pesky bug with the logo after submitting forms 😒
+
+And that is just off the top of my head!
+
+## Thank You
+
+Thank you for taking the time to check out my project!
+
+I started this project with a deadline on the horizon. I crammed as much as I could into the project in that time frame, but the project doesn't end here!
+
+But I had to submit the project eventually, right?
+
+### Or maybe just one more thing...
+
+Ughhh! It was hard to tell myself "This is enough". This is a passion project as much as it is an assignment. As much as I wanted to keep improving the app before submitting it, I am still proud of what I've accomplished so far. There is so much I can add, and so much more I can learn through that process.
+
+Be sure to check back in to see where ProPulse goes!
+
+## Contact Me
+
+You can reach out to me on social media:
+
+- [Discord](https://discordapp.com/users/792831510515548220)
+- [LinkedIn](https://www.linkedin.com/in/sean-bailey-619723279)
+- [Facebook](https://www.facebook.com/profile.php?id=61556172566858)
+
+Feel free to connect with me on any of these platforms!
+
+I welcome any and all feedback with an open mind, and open arms!
