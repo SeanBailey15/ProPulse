@@ -161,3 +161,7 @@ Before running the app, you will need to set up some configuration files in the 
    ```
 
 9. You may now proceed to step 5 of the Installation instructions.
+
+## What Next?
+
+![Sign Up](frontend/public/clips/SignUp.mp4)

@@ -55,6 +55,12 @@
   margin-top: 0.25rem;
 }
 
+.Form-notifications-text-warning {
+  font-size: small;
+  margin-top: 0.25rem;
+  color: darkred;
+}
+
 .Form-label-checkbox {
   margin-left: 0.5rem;
   margin-bottom: 0;

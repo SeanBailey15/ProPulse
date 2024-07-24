@@ -274,6 +274,12 @@ export default function SignUpForm({ signUp, urlBase64ToUint8Array }) {
               </Button>
             </InputGroup>
 
+            <p className="Form-notifications-text-warning">
+              * In this Alpha version of ProPulse, you will not be able to join
+              a project unless you consent to notifications. Future updates will
+              address this functionality *
+            </p>
+
             <p className="Form-notifications-text">
               Please consider giving consent to receive notifications in order
               to get the most out of your ProPulse experience.
