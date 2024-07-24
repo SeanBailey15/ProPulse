@@ -164,4 +164,6 @@ Before running the app, you will need to set up some configuration files in the 
 
 ## What Next?
 
-![Sign Up](frontend/public/clips/SignUp.mp4)
+### Sign Up!
+
+![Sign Up Gif](frontend/public/clips/SignUp.gif)
