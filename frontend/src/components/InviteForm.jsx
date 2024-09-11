@@ -79,6 +79,7 @@ export default function InviteForm() {
                 value={values.privilege}
                 onChange={handleChange}
               >
+                <option value={""}>--Please Choose An Option--</option>
                 <option>No</option>
                 <option>Yes</option>
               </Input>
